@@ -1,0 +1,28 @@
+{
+	"api": {
+		"google":{
+			"key":"AIzaSyDZNP-Rc4vCAztgeJjqTg6hTHyfspxsPs8"
+		},
+		"twitter":{
+			"oAuth":"https://api.twitter.com/oauth2/token",
+			"service":"https://stream.twitter.com/1.1/statuses/",
+			"type":"json",
+			"key":"Vd08xrR9cN6axryGYuvHFYOYB",
+			"secret":"yzTFZgGUfEpgHPttiR9s5a8PPJxbri1OGORLtC4SrPb0metDMw"
+		},
+		"markitOnDemand":{
+			"service":"http://dev.markitondemand.com/MODApis/Api/v2/",
+			"type":"json"
+		}
+	}
+	"companies":[
+		"AAPL",
+		"GOOGC",
+		"GOOG",
+		"TWTR",
+		"FB",
+		"MSFT",
+		"DELL",
+		"HPQ"
+	]
+}
