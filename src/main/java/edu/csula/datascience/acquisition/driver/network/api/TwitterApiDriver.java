@@ -2,25 +2,23 @@ package edu.csula.datascience.acquisition.driver.network.api;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.network.ApiServiceCallDriver;
 import edu.csula.datascience.acquisition.model.Company;
-//import utility.vendors.douglascrockford.json.JSONObject;
+import edu.csula.datascience.acquisition.model.TweetModel;
 import edu.csula.datascience.acquisition.runner.DataCollectionRunner;
 
 import org.apache.commons.codec.binary.Base64;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.mongodb.util.JSON;
-
-public class TwitterApiDriver extends BaseApiDriver {
+public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 	private static TwitterApiDriver Instance = null;
-	protected String consumerKey;
-	protected String consumerSecret;
-	protected String encodedConsumerKey;
-	protected String encodedConsumerSecret;
+	protected List<TweetModel> tweets;
 	
 	public static TwitterApiDriver getInstance() {
 		if(Instance == null) {
@@ -30,10 +28,8 @@ public class TwitterApiDriver extends BaseApiDriver {
 		return Instance;
 	}
 	
-	protected TwitterApiDriver() {
-		//TODO: Obtain oAuth Token
-		
-		//TODO: Connect to Stream
+	protected TwitterApiDriver() { 
+		tweets = new ArrayList<>();
 	}
 	
 	public boolean authenticate() {
@@ -82,14 +78,46 @@ public class TwitterApiDriver extends BaseApiDriver {
 		}
 		q = q.substring(4);
 		apiCaller.setRequestData("q", q);
+		apiCaller.setRequestData("lang", "en");
 		try {
 			apiCaller.connect();
-			System.out.println(apiCaller.getContent());
-			//Object data = (Object)JSON.parse(apiCaller.getContent());
+			String response = apiCaller.getContent();
+			JSONObject JSON = new JSONObject(response);
+			if(JSON.has("statuses")) {
+				JSONArray statuses = JSON.getJSONArray("statuses");
+				System.out.println("Retrieved " + statuses.length() + " statuses");
+				
+				for(int i = 0; i < statuses.length(); i++) {
+					JSONObject item = statuses.getJSONObject(i);
+					TweetModel model = new TweetModel();
+					model.created_at = item.getString("created_at");
+					model.favorite_count = item.getInt("favorite_count");
+					model.id = item.getInt("id");
+					model.retweet_count = item.getInt("retweet_count");
+					model.text = item.getString("text");
+					this.tweets.add(model);
+				}
+			} else {
+				System.out.println("Did not retrieved any statuses");
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
+	}	
+
+	@Override
+	public boolean hasNext() {
+		return this.tweets.size() > 0;
+	}
+
+	@Override
+	public Collection<TweetModel> next() {
+		List<TweetModel> ret = new ArrayList<TweetModel>();
+		for(int i = 0 ; i < batchSize && i < this.tweets.size(); i++) {
+			ret.add(this.tweets.remove(0));
+		}
+		return ret;
 	}
 
 }
