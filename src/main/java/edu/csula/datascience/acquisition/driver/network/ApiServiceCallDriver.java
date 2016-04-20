@@ -3,6 +3,7 @@ package edu.csula.datascience.acquisition.driver.network;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -18,6 +19,8 @@ public class ApiServiceCallDriver extends BaseNetworkDriver{
 	
 	public ApiServiceCallDriver(String url) {
 		this.url = url;
+		this.requestHeaderData = new HashMap<>();
+		this.requestData = new HashMap<>();
 	}
 	
 	public void setUrl(String url) {
@@ -28,6 +31,7 @@ public class ApiServiceCallDriver extends BaseNetworkDriver{
 	public void connect() throws IOException {
 		this.connection = HttpClients.createDefault();
 		if(this.method.compareTo(GET) == 0) {
+			System.out.println("URL - GET: " + this.url);
 			String query = "";
 			for(String key : this.requestData.keySet()) {
 				query += "&" +key + "=" + URLEncoder.encode(this.requestData.get(key),"UTF-8");
@@ -35,19 +39,20 @@ public class ApiServiceCallDriver extends BaseNetworkDriver{
 			query = query.substring(1);
 			
 			HttpGet connection = new HttpGet(this.url+"?"+query);
-			for(String key : this.requestData.keySet()) {
+			for(String key : this.requestHeaderData.keySet()) {
 				connection.addHeader(key, this.requestHeaderData.get(key));
 			}
 			
 			this.response = this.connection.execute(connection);
 		} else {
+			System.out.println("URL - POST: " + this.url);
 			HttpPost connection = new HttpPost(this.url);
 			ArrayList<NameValuePair> parameters = new ArrayList<>();
 			for (String key : this.requestData.keySet()) {
 				parameters.add(new BasicNameValuePair(key,this.requestData.get(key)));
 			}
 			
-			for(String key : this.requestData.keySet()) {
+			for(String key : this.requestHeaderData.keySet()) {
 				connection.addHeader(key, this.requestHeaderData.get(key));
 			}
 			

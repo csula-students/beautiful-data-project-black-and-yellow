@@ -10,5 +10,9 @@ public abstract class BaseApiDriver extends BaseDriver {
 		this.config = data;
 	}
 	
+	public final HashMap<String,String> getConfigData() {
+		return this.config;
+	}
+	
 	abstract public void queryService();
 }

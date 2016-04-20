@@ -7,7 +7,7 @@ public class YoutubeApiWorker extends Thread {
 		YoutubeApiDriver Instance = YoutubeApiDriver.getInstance();
 		while(true) {
 			try {
-				Thread.sleep(10000000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

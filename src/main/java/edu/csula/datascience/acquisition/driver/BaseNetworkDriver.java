@@ -22,7 +22,7 @@ public abstract class BaseNetworkDriver extends BaseDriver {
 	abstract public void connect() throws IOException;
 	
 	public String getContent() {
-		String response = null;
+		String response = "";
 		
 		HttpEntity entity = this.response.getEntity();
 		if(entity != null) {

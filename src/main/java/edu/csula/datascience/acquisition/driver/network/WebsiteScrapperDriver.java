@@ -72,6 +72,7 @@ public class WebsiteScrapperDriver extends BaseNetworkDriver {
 	public void connect() throws IOException {
 		this.connection = HttpClients.createDefault();
 		if(this.method.compareTo(GET) == 0) {
+			System.out.println("URL - GET: " + this.protocol+"://"+this.host+":"+this.port+this.path);
 			String query = "";
 			for(String key : this.requestData.keySet()) {
 				query += "&" +key + "=" + URLEncoder.encode(this.requestData.get(key),"UTF-8");
@@ -79,19 +80,20 @@ public class WebsiteScrapperDriver extends BaseNetworkDriver {
 			query = query.substring(1);
 			
 			HttpGet connection = new HttpGet(this.protocol+"://"+this.host+":"+this.port+this.path+"?"+query);
-			for(String key : this.requestData.keySet()) {
+			for(String key : this.requestHeaderData.keySet()) {
 				connection.addHeader(key, this.requestHeaderData.get(key));
 			}
 			
 			this.response = this.connection.execute(connection);
 		} else {
+			System.out.println("URL - POST: " + this.protocol+"://"+this.host+":"+this.port+this.path);
 			HttpPost connection = new HttpPost(this.protocol+"://"+this.host+":"+this.port+this.path);
 			ArrayList<NameValuePair> parameters = new ArrayList<>();
 			for (String key : this.requestData.keySet()) {
 				parameters.add(new BasicNameValuePair(key,this.requestData.get(key)));
 			}
 			
-			for(String key : this.requestData.keySet()) {
+			for(String key : this.requestHeaderData.keySet()) {
 				connection.addHeader(key, this.requestHeaderData.get(key));
 			}
 			

@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import edu.csula.datascience.acquisition.driver.network.api.MarkitOnDemandApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.YoutubeApiDriver;
@@ -14,10 +17,11 @@ import edu.csula.datascience.acquisition.driver.worker.MODApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.TwitterApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.YoutubeApiWorker;
 import edu.csula.datascience.acquisition.model.Company;
-import utility.vendors.douglascrockford.json.JSONArray;
-import utility.vendors.douglascrockford.json.JSONObject;
+//import utility.vendors.douglascrockford.json.JSONArray;
+//import utility.vendors.douglascrockford.json.JSONObject;
 
 public class DataCollectionRunner {
+	protected static DataCollectionRunner Instance = null;
 	public static final String MOD = "markitOnDemand";
 	public static final String YOUTUBE = "youtube";
 	public static final String TWITTER = "twitter";
@@ -40,9 +44,9 @@ public class DataCollectionRunner {
 		TwitterApiDriver.getInstance().setConfigData(apiConfigs.get(TWITTER));
 		
 		//Load & Start Workers
-		MODApiWorker worker1 = new MODApiWorker();
-		worker1.start();
-		threads.add(worker1);
+//		MODApiWorker worker1 = new MODApiWorker();
+//		worker1.start();
+//		threads.add(worker1);
 		
 		TwitterApiWorker worker2 = new TwitterApiWorker();
 		worker2.start();
@@ -66,8 +70,16 @@ public class DataCollectionRunner {
 		}
 	}
 	
+	public static List<Company> getCompanies() {
+		return Instance.companies;
+	}
+	
+	public static HashMap<String,String> getConfig(String key) {
+		return Instance.apiConfigs.get(key);
+	}
+	
 	public static void main(String[] args) {
-		DataCollectionRunner Instance = new DataCollectionRunner();
+		Instance = new DataCollectionRunner();
 		
 		//Read Config File
 		try {
@@ -84,7 +96,7 @@ public class DataCollectionRunner {
 			JSONArray rows = null;
 			JSONObject item = null;
 			
-			rows = rootObject.getJSONArray("comapnies");
+			rows = rootObject.getJSONArray("companies");
 			if(rows != null) {
 				for(int i = 0 ; i < rows.length(); i++) {
 					item = rows.getJSONObject(i);
@@ -95,12 +107,12 @@ public class DataCollectionRunner {
 					
 					_rows = item.getJSONArray("alias");
 					for(int j = 0; j < _rows.length(); j++) {
-						alias.add(rows.getString(j));
+						alias.add(_rows.getString(j));
 					}
 					
 					_rows = item.getJSONArray("stock");
 					for(int j = 0; j < _rows.length(); j++) {
-						stock.add(rows.getString(j));
+						stock.add(_rows.getString(j));
 					}
 					
 					Instance.companies.add(new Company(item.getString("name"),alias,stock));

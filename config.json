@@ -5,7 +5,7 @@
 		},
 		"twitter":{
 			"oAuth":"https://api.twitter.com/oauth2/token",
-			"service":"https://stream.twitter.com/1.1/statuses/",
+			"service":"https://api.twitter.com/1.1/search/tweets.",
 			"type":"json",
 			"key":"Vd08xrR9cN6axryGYuvHFYOYB",
 			"secret":"yzTFZgGUfEpgHPttiR9s5a8PPJxbri1OGORLtC4SrPb0metDMw"
@@ -14,7 +14,7 @@
 			"service":"http://dev.markitondemand.com/MODApis/Api/v2/",
 			"type":"json"
 		}
-	}
+	},
 	"companies":[
 		{
 			"name":"Apple",
