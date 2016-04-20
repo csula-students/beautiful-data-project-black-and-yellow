@@ -16,13 +16,54 @@
 		}
 	}
 	"companies":[
-		"AAPL",
-		"GOOGC",
-		"GOOG",
-		"TWTR",
-		"FB",
-		"MSFT",
-		"DELL",
-		"HPQ"
+		{
+			"name":"Apple",
+			"alias":[
+				"iOS",
+				"Mac"
+			],
+			"stock":[
+				"AAPL"
+			]
+		}, {
+			"name":"Google",
+			"alias":[
+				"Android"
+			],
+			"stock":[
+				"GOOGC",
+				"GOOG"
+			]
+		}, {
+			"name":"Twitter",
+			"alias":[],
+			"stock":[
+				"TWTR"
+			]
+		}, {
+			"name":"Facebook",
+			"alias":[],
+			"stock":[
+				"FB"
+			]
+		}, {
+			"name":"Microsoft",
+			"alias":[],
+			"stock":[
+				"MSFT"
+			]
+		}, {
+			"name":"Dell",
+			"alias":[],
+			"stock":[
+				"DELL"
+			]
+		}, {
+			"name":"Hewlett Packard",
+			"alias":[],
+			"stock":[
+				"HPQ"
+			]
+		}
 	]
 }
