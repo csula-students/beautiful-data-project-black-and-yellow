@@ -48,6 +48,12 @@ task hello(type: JavaExec) {
   main = 'edu.csula.datascience.examples.Hello'
 }
 
+task homework2(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+
+  main = 'edu.csula.datascience.acquisition.runner.DataCollectionRunner'
+}
+
 task token(type: JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
 
