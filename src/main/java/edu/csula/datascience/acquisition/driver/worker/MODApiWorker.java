@@ -32,7 +32,7 @@ public class MODApiWorker extends Thread {
 				}
 				
 				//TODO: Do Something with data			
-				Thread.sleep(60000);
+				Thread.sleep(3600000); //Once an hour
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

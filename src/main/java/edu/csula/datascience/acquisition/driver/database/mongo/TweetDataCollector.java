@@ -18,6 +18,7 @@ public class TweetDataCollector<T extends TweetModel,A extends T> extends BaseMo
 	public Collection<T> mungee(Collection<A> src) {
 		List<T> ret = new ArrayList<>();
 		for(A item : src) {
+			//TODO: check timestamp on tweet
 			ret.add((T)item);
 		}
 		return ret;

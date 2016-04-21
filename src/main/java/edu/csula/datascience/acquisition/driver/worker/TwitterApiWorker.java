@@ -20,7 +20,7 @@ public class TwitterApiWorker extends Thread {
 					while(Instance.hasNext()) {
 						db.save(db.mungee(Instance.next()));
 					}
-					Thread.sleep(86400000);
+					Thread.sleep(900000); //15 minutes
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

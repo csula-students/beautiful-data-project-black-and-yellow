@@ -24,7 +24,7 @@ public class YoutubeApiWorker extends Thread {
 				while(Instance.hasNext()) {
 					db.save(db.mungee(Instance.next()));
 				}
-				Thread.sleep(86400000);
+				Thread.sleep(86400000); //once a day
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
