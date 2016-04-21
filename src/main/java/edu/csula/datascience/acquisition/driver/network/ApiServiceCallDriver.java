@@ -31,13 +31,13 @@ public class ApiServiceCallDriver extends BaseNetworkDriver{
 	public void connect() throws IOException {
 		this.connection = HttpClients.createDefault();
 		if(this.method.compareTo(GET) == 0) {
-			System.out.println("URL - GET: " + this.url);
 			String query = "";
 			for(String key : this.requestData.keySet()) {
 				query += "&" +key + "=" + URLEncoder.encode(this.requestData.get(key),"UTF-8");
 			}
 			query = query.substring(1);
 			
+			System.out.println("URL - GET: " + this.url+"?"+query);
 			HttpGet connection = new HttpGet(this.url+"?"+query);
 			for(String key : this.requestHeaderData.keySet()) {
 				connection.addHeader(key, this.requestHeaderData.get(key));

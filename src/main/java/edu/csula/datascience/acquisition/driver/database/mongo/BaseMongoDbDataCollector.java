@@ -15,21 +15,23 @@ public abstract class BaseMongoDbDataCollector<T,A> extends BaseDataCollector<T,
 	private MongoDatabase database;
 	private MongoCollection<Document> collection;
 	private static String dbName = "homework2";
+	private String collectionName;
     
-    public BaseMongoDbDataCollector() {
-    	// establish database connection to MongoDB
-        mongoClient = new MongoClient();
+	public BaseMongoDbDataCollector(String dbHost, String collectionName) {
+		// establish database connection to MongoDB
+        mongoClient = new MongoClient(dbHost);
         database = mongoClient.getDatabase(dbName);
-        collection = database.getCollection(this.getCollectionName());
-    }
+        collection = database.getCollection(collectionName);
+        this.collectionName = collectionName;
+	}
     
     protected void insertMany(List<Document> documents) {
+    	System.out.println("Saving many documents to " + this.collectionName);
     	collection.insertMany(documents);
     }
     
     protected void insertOne(Document document) {
+    	System.out.println("Saving one document to " + this.collectionName);
     	collection.insertOne(document);
     }
-    
-    abstract protected String getCollectionName();
 }

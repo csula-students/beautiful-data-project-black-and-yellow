@@ -6,7 +6,7 @@ import edu.csula.datascience.acquisition.Source;
 
 public abstract class BaseApiDriver<A> extends BaseDriver implements Source<A> {
 	protected String apiServer;
-	protected int batchSize;
+	protected int batchSize = 1000;
 	protected HashMap<String,String> config;
 	
 	public void setBatchSize(int size) {

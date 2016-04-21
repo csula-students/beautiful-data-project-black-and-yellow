@@ -2,8 +2,10 @@ package edu.csula.datascience.acquisition.driver.network.api;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
@@ -66,6 +68,7 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 			return;
 		}
 		
+		SimpleDateFormat date = new SimpleDateFormat("YYYY-MM-dd");
 		ApiServiceCallDriver apiCaller = new ApiServiceCallDriver(this.config.get("service")+this.config.get("type"));
 		apiCaller.setMethodGet();
 		apiCaller.setHeader("Authorization", "Bearer " + this.config.get("access_token"));
@@ -77,7 +80,7 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 			q += " OR " + company.name;
 		}
 		q = q.substring(4);
-		apiCaller.setRequestData("q", q);
+		apiCaller.setRequestData("q", q+" since:"+date.format(new Date()));
 		apiCaller.setRequestData("lang", "en");
 		try {
 			apiCaller.connect();

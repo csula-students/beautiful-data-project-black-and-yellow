@@ -17,8 +17,6 @@ import edu.csula.datascience.acquisition.driver.worker.MODApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.TwitterApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.YoutubeApiWorker;
 import edu.csula.datascience.acquisition.model.Company;
-//import utility.vendors.douglascrockford.json.JSONArray;
-//import utility.vendors.douglascrockford.json.JSONObject;
 
 public class DataCollectionRunner {
 	protected static DataCollectionRunner Instance = null;
@@ -27,7 +25,7 @@ public class DataCollectionRunner {
 	public static final String TWITTER = "twitter";
 	public static final String GOOGLE = "google";
 	
-	
+	protected String dbHost;
 	protected List<Company> companies;
 	protected HashMap<String,HashMap<String,String>> apiConfigs;
 	protected List<Thread> threads;
@@ -40,19 +38,19 @@ public class DataCollectionRunner {
 	protected void run() {
 		//Load Configs
 		MarkitOnDemandApiDriver.getInstance().setConfigData(apiConfigs.get(MOD));
-		YoutubeApiDriver.getInstance().setConfigData(apiConfigs.get(YOUTUBE));
+		YoutubeApiDriver.getInstance().setConfigData(apiConfigs.get(GOOGLE));
 		TwitterApiDriver.getInstance().setConfigData(apiConfigs.get(TWITTER));
 		
 		//Load & Start Workers
-//		MODApiWorker worker1 = new MODApiWorker();
-//		worker1.start();
-//		threads.add(worker1);
+		MODApiWorker worker1 = new MODApiWorker(this.dbHost);
+		worker1.start();
+		threads.add(worker1);
 		
-		TwitterApiWorker worker2 = new TwitterApiWorker();
+		TwitterApiWorker worker2 = new TwitterApiWorker(this.dbHost);
 		worker2.start();
 		threads.add(worker2);
 		
-		YoutubeApiWorker worker3 = new YoutubeApiWorker();
+		YoutubeApiWorker worker3 = new YoutubeApiWorker(this.dbHost);
 		worker3.start();
 		threads.add(worker3);
 		
@@ -92,11 +90,11 @@ public class DataCollectionRunner {
 			scan.close();
 			
 			// Parse the JSON string to a JSONObject
-			JSONObject rootObject = new JSONObject(jsonStr);
+			JSONObject json = new JSONObject(jsonStr);
 			JSONArray rows = null;
 			JSONObject item = null;
 			
-			rows = rootObject.getJSONArray("companies");
+			rows = json.getJSONArray("companies");
 			if(rows != null) {
 				for(int i = 0 ; i < rows.length(); i++) {
 					item = rows.getJSONObject(i);
@@ -119,7 +117,7 @@ public class DataCollectionRunner {
 				}
 			}
 			
-			item = rootObject.getJSONObject("api");
+			item = json.getJSONObject("api");
 			if(item != null) {
 				String[] names = {GOOGLE,TWITTER,MOD};
 				for(String name : names) {
@@ -133,6 +131,8 @@ public class DataCollectionRunner {
 					Instance.apiConfigs.put(name,data);
 				}
 			}
+			
+			Instance.dbHost = json.getString("dbHost");
 			Instance.run();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

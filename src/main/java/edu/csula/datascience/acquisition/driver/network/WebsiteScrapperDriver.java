@@ -71,14 +71,14 @@ public class WebsiteScrapperDriver extends BaseNetworkDriver {
 	
 	public void connect() throws IOException {
 		this.connection = HttpClients.createDefault();
-		if(this.method.compareTo(GET) == 0) {
-			System.out.println("URL - GET: " + this.protocol+"://"+this.host+":"+this.port+this.path);
+		if(this.method.compareTo(GET) == 0) {			
 			String query = "";
 			for(String key : this.requestData.keySet()) {
 				query += "&" +key + "=" + URLEncoder.encode(this.requestData.get(key),"UTF-8");
 			}
 			query = query.substring(1);
 			
+			System.out.println("URL - GET: " + this.protocol+"://"+this.host+":"+this.port+this.path+"?"+query);
 			HttpGet connection = new HttpGet(this.protocol+"://"+this.host+":"+this.port+this.path+"?"+query);
 			for(String key : this.requestHeaderData.keySet()) {
 				connection.addHeader(key, this.requestHeaderData.get(key));

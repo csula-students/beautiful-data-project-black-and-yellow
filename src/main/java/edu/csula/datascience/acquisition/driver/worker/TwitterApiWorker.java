@@ -5,17 +5,22 @@ import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.model.TweetModel;
 
 public class TwitterApiWorker extends Thread {
+	private String dbHost;
+	public TwitterApiWorker(String dbHost) {
+		this.dbHost = dbHost;
+	}
+	
 	public void run() {
 		TwitterApiDriver Instance = TwitterApiDriver.getInstance();
-		//TweetDataCollector<TweetModel,TweetModel> db = new TweetDataCollector<>();
+		TweetDataCollector<TweetModel,TweetModel> db = new TweetDataCollector<>(this.dbHost);
 		if(Instance.authenticate()) {
 			while(true) {
 				try {
 					Instance.queryService();
-//					while(Instance.hasNext()) {
-//						db.save(db.mungee(Instance.next()));
-//					}
-					Thread.sleep(10000);
+					while(Instance.hasNext()) {
+						db.save(db.mungee(Instance.next()));
+					}
+					Thread.sleep(86400000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -23,8 +28,6 @@ public class TwitterApiWorker extends Thread {
 			}
 		} else {
 			System.out.println("Failed to authenticate Twitter API");
-		}
-		
+		}		
 	}
-
 }

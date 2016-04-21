@@ -33,7 +33,11 @@ dependencies {
   compile 'com.mashape.unirest:unirest-java:1.4.9'
   compile 'org.mongodb:mongodb-driver:3.2.2'
   compile 'org.twitter4j:twitter4j-core:4.0.4'
-  compile 'com.google.api-client:google-api-client:1.19.1'
+  compile 'com.google.api-client:google-api-client:1.20.0'
+  compile 'com.google.apis:google-api-services-sqladmin:v1beta4-rev20-1.20.0'
+  compile 'com.google.apis:google-api-services-youtube:v3-rev167-1.20.0'
+  compile 'com.google.oauth-client:google-oauth-client-java6:1.11.0-beta'
+  compile 'com.google.oauth-client:google-oauth-client-jetty:1.11.0-beta'
 
   testCompile group: 'junit', name: 'junit', version: '4.11'
 }

@@ -1,4 +1,5 @@
 {
+	"dbHost": "localhost",
 	"api": {
 		"google":{
 			"key":"AIzaSyDZNP-Rc4vCAztgeJjqTg6hTHyfspxsPs8"
@@ -11,7 +12,7 @@
 			"secret":"yzTFZgGUfEpgHPttiR9s5a8PPJxbri1OGORLtC4SrPb0metDMw"
 		},
 		"markitOnDemand":{
-			"service":"http://dev.markitondemand.com/MODApis/Api/v2/",
+			"service":"http://dev.markitondemand.com/MODApis/Api/v2/Quote/",
 			"type":"json"
 		}
 	},
