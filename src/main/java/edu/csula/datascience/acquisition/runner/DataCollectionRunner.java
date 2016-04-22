@@ -11,9 +11,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import edu.csula.datascience.acquisition.driver.network.api.MarkitOnDemandApiDriver;
+import edu.csula.datascience.acquisition.driver.network.api.QuandlStockApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.YoutubeApiDriver;
 import edu.csula.datascience.acquisition.driver.worker.MODApiWorker;
+import edu.csula.datascience.acquisition.driver.worker.QuandlApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.TwitterApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.YoutubeApiWorker;
 import edu.csula.datascience.acquisition.model.Company;
@@ -24,6 +26,7 @@ public class DataCollectionRunner {
 	public static final String YOUTUBE = "youtube";
 	public static final String TWITTER = "twitter";
 	public static final String GOOGLE = "google";
+	public static final String QUANDL = "quandl";
 	
 	protected String dbHost;
 	protected List<Company> companies;
@@ -40,19 +43,24 @@ public class DataCollectionRunner {
 		MarkitOnDemandApiDriver.getInstance().setConfigData(apiConfigs.get(MOD));
 		YoutubeApiDriver.getInstance().setConfigData(apiConfigs.get(GOOGLE));
 		TwitterApiDriver.getInstance().setConfigData(apiConfigs.get(TWITTER));
+		QuandlStockApiDriver.getInstance().setConfigData(apiConfigs.get(QUANDL));
 		
 		//Load & Start Workers
-		MODApiWorker worker1 = new MODApiWorker(this.dbHost);
-		worker1.start();
-		threads.add(worker1);
+//		MODApiWorker worker1 = new MODApiWorker(this.dbHost);
+//		worker1.start();
+//		threads.add(worker1);
+//		
+//		TwitterApiWorker worker2 = new TwitterApiWorker(this.dbHost);
+//		worker2.start();
+//		threads.add(worker2);
+//		
+//		YoutubeApiWorker worker3 = new YoutubeApiWorker(this.dbHost);
+//		worker3.start();
+//		threads.add(worker3);
 		
-		TwitterApiWorker worker2 = new TwitterApiWorker(this.dbHost);
-		worker2.start();
-		threads.add(worker2);
-		
-		YoutubeApiWorker worker3 = new YoutubeApiWorker(this.dbHost);
-		worker3.start();
-		threads.add(worker3);
+		QuandlApiWorker worker4 = new QuandlApiWorker(this.dbHost);
+		worker4.start();
+		threads.add(worker4);
 		
 		//Keep parent alive until children are finished
 		for(Thread thread : threads) {
@@ -119,7 +127,7 @@ public class DataCollectionRunner {
 			
 			item = json.getJSONObject("api");
 			if(item != null) {
-				String[] names = {GOOGLE,TWITTER,MOD};
+				String[] names = {GOOGLE,TWITTER,MOD,QUANDL};
 				for(String name : names) {
 					JSONObject _item = item.getJSONObject(name);
 					HashMap<String,String> data = new HashMap<>();

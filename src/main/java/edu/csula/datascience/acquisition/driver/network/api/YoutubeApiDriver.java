@@ -1,28 +1,20 @@
 package edu.csula.datascience.acquisition.driver.network.api;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.samples.youtube.cmdline.Auth;
-import com.google.api.services.sqladmin.SQLAdmin;
-import com.google.api.services.sqladmin.SQLAdminScopes;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
-import com.google.common.collect.Lists;
-
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.model.Company;
 import edu.csula.datascience.acquisition.model.YoutubeModel;
@@ -53,6 +45,7 @@ public class YoutubeApiDriver extends BaseApiDriver<YoutubeModel> {
 	@Override
 	public void queryService() {
 		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
 		calendar.set(Calendar.HOUR, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);

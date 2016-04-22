@@ -1,6 +1,5 @@
 package edu.csula.datascience.acquisition.driver.network.api;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,10 +7,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.mongodb.util.JSON;
-
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
-import edu.csula.datascience.acquisition.driver.network.ApiServiceCallDriver;
+import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
 import edu.csula.datascience.acquisition.model.MarkitOnDemandModel;
 
 /**
@@ -34,7 +31,7 @@ public class MarkitOnDemandApiDriver extends BaseApiDriver<MarkitOnDemandModel> 
 	
 	protected MarkitOnDemandApiDriver() {
 		this.companies = new ArrayList<>();
-		companyStockValues = new ArrayList<MarkitOnDemandModel>();
+		this.companyStockValues = new ArrayList<>();
 	}
 	
 	public void addCompanyStock(String stockName) {
@@ -45,7 +42,7 @@ public class MarkitOnDemandApiDriver extends BaseApiDriver<MarkitOnDemandModel> 
 	public void queryService() {		
 		// TODO Auto-generated method stub
 		this.companies.forEach((String stockName)->{
-			ApiServiceCallDriver apiScrapper = new ApiServiceCallDriver(this.config.get("service")+this.config.get("type"));
+			HTTPServiceDriver apiScrapper = new HTTPServiceDriver(this.config.get("service")+this.config.get("type"));
 			apiScrapper.setMethodGet();
 			apiScrapper.setRequestData("symbol", stockName);
 			try {

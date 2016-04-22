@@ -43,6 +43,21 @@ public abstract class BaseNetworkDriver extends BaseDriver {
 		return response;
 	}
 	
+	public InputStream getInputStream() {
+		HttpEntity entity = this.response.getEntity();
+		if(entity != null) {
+			InputStream iStream = null;
+			try {
+				iStream = entity.getContent();
+				return iStream;
+			} catch (IOException e) {
+				//Don't Care
+			}
+		}
+		
+		return null;
+	}
+	
 	public final void setMethodGet() {
 		this.method = GET;
 	}

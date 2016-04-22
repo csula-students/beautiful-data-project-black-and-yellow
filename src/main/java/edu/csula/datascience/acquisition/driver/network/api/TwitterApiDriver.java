@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
-import edu.csula.datascience.acquisition.driver.network.ApiServiceCallDriver;
+import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
 import edu.csula.datascience.acquisition.model.Company;
 import edu.csula.datascience.acquisition.model.TweetModel;
 import edu.csula.datascience.acquisition.runner.DataCollectionRunner;
@@ -35,7 +35,7 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 	}
 	
 	public boolean authenticate() {
-		ApiServiceCallDriver apiCaller = new ApiServiceCallDriver(this.config.get("oAuth"));
+		HTTPServiceDriver apiCaller = new HTTPServiceDriver(this.config.get("oAuth"));
 		apiCaller.setMethodPost();
 		try {
 			String key = URLEncoder.encode(this.config.get("key"),"UTF-8");
@@ -69,7 +69,7 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 		}
 		
 		SimpleDateFormat date = new SimpleDateFormat("YYYY-MM-dd");
-		ApiServiceCallDriver apiCaller = new ApiServiceCallDriver(this.config.get("service")+this.config.get("type"));
+		HTTPServiceDriver apiCaller = new HTTPServiceDriver(this.config.get("service")+this.config.get("type"));
 		apiCaller.setMethodGet();
 		apiCaller.setHeader("Authorization", "Bearer " + this.config.get("access_token"));
 		apiCaller.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");

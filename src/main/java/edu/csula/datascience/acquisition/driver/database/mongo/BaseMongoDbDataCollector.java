@@ -26,6 +26,9 @@ public abstract class BaseMongoDbDataCollector<T,A> extends BaseDataCollector<T,
 	}
     
     protected void insertMany(List<Document> documents) {
+    	if(documents.size() == 0) {
+    		return;
+    	}
     	System.out.println("Saving many documents to " + this.collectionName);
     	collection.insertMany(documents);
     }

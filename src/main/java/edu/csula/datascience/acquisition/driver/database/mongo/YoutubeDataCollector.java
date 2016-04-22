@@ -16,9 +16,9 @@ public class YoutubeDataCollector<T extends YoutubeModel,A extends T> extends Ba
 	@Override
 	public Collection<T> mungee(Collection<A> src) {
 		List<T> ret = new ArrayList<>();
-		for(A item : src) {
-			ret.add((T)item);
-		}
+		ret.addAll(src);
+		//Cleanup
+		src.clear();
 		return ret;
 	}
 

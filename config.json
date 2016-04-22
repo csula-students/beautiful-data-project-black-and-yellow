@@ -14,6 +14,11 @@
 		"markitOnDemand":{
 			"service":"http://dev.markitondemand.com/MODApis/Api/v2/Quote/",
 			"type":"json"
+		},
+		"quandl":{
+			"key":"vTdaA-ZbqiSEaNRiGi7B",
+			"wiki":"https://www.quandl.com/api/v3/datasets/WIKI/",
+			"revenue":"https://www.quandl.com/api/v3/datasets/SEC/"
 		}
 	},
 	"companies":[
