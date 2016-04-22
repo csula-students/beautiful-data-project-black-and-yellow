@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import edu.csula.datascience.acquisition.driver.network.api.MarkitOnDemandApiDriver;
+import edu.csula.datascience.acquisition.driver.network.api.QuandlRevenueApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.QuandlStockApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.YoutubeApiDriver;
@@ -44,19 +45,20 @@ public class DataCollectionRunner {
 		YoutubeApiDriver.getInstance().setConfigData(apiConfigs.get(GOOGLE));
 		TwitterApiDriver.getInstance().setConfigData(apiConfigs.get(TWITTER));
 		QuandlStockApiDriver.getInstance().setConfigData(apiConfigs.get(QUANDL));
+		QuandlRevenueApiDriver.getInstance().setConfigData(apiConfigs.get(QUANDL));
 		
 		//Load & Start Workers
-//		MODApiWorker worker1 = new MODApiWorker(this.dbHost);
-//		worker1.start();
-//		threads.add(worker1);
-//		
-//		TwitterApiWorker worker2 = new TwitterApiWorker(this.dbHost);
-//		worker2.start();
-//		threads.add(worker2);
-//		
-//		YoutubeApiWorker worker3 = new YoutubeApiWorker(this.dbHost);
-//		worker3.start();
-//		threads.add(worker3);
+		MODApiWorker worker1 = new MODApiWorker(this.dbHost);
+		worker1.start();
+		threads.add(worker1);
+		
+		TwitterApiWorker worker2 = new TwitterApiWorker(this.dbHost);
+		worker2.start();
+		threads.add(worker2);
+		
+		YoutubeApiWorker worker3 = new YoutubeApiWorker(this.dbHost);
+		worker3.start();
+		threads.add(worker3);
 		
 		QuandlApiWorker worker4 = new QuandlApiWorker(this.dbHost);
 		worker4.start();
