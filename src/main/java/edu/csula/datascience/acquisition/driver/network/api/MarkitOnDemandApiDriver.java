@@ -84,7 +84,7 @@ public class MarkitOnDemandApiDriver extends BaseApiDriver<MarkitOnDemandModel> 
 	@Override
 	public Collection<MarkitOnDemandModel> next() {
 		List<MarkitOnDemandModel> ret = new ArrayList<MarkitOnDemandModel>();
-		for(int i = 0 ; i < batchSize && i < this.companyStockValues.size(); i++) {
+		for(int i = 0 ; i < batchSize && this.companyStockValues.size() > 0; i++) {
 			ret.add(this.companyStockValues.remove(0));
 		}
 		return ret;

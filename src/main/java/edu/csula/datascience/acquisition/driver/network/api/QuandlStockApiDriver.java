@@ -84,7 +84,7 @@ public class QuandlStockApiDriver extends BaseApiDriver<QuandlStockModel> {
 	@Override
 	public Collection<QuandlStockModel> next() {
 		List<QuandlStockModel> ret = new ArrayList<>();
-		for(int i = 0 ; i < batchSize && i < this.dataValues.size(); i++) {
+		for(int i = 0 ; i < batchSize && this.dataValues.size() > 0; i++) {
 			ret.add(this.dataValues.remove(0));
 		}
 		return ret;

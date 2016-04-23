@@ -95,7 +95,7 @@ public class YoutubeApiDriver extends BaseApiDriver<YoutubeModel> {
 	@Override
 	public Collection<YoutubeModel> next() {
 		List<YoutubeModel> ret = new ArrayList<YoutubeModel>();
-		for(int i = 0 ; i < batchSize && i < this.videos.size(); i++) {
+		for(int i = 0 ; i < batchSize && this.videos.size() > 0 ; i++) {
 			ret.add(this.videos.remove(0));
 		}
 		return ret;

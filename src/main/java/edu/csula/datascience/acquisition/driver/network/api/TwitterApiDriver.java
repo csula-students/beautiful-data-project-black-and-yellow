@@ -12,7 +12,6 @@ import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
 import edu.csula.datascience.acquisition.model.Company;
 import edu.csula.datascience.acquisition.model.TweetModel;
-import edu.csula.datascience.acquisition.runner.DataCollectionRunner;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONArray;
@@ -21,6 +20,7 @@ import org.json.JSONObject;
 public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 	private static TwitterApiDriver Instance = null;
 	protected List<TweetModel> tweets;
+	protected List<Company> companies;
 	
 	public static TwitterApiDriver getInstance() {
 		if(Instance == null) {
@@ -32,6 +32,11 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 	
 	protected TwitterApiDriver() { 
 		tweets = new ArrayList<>();
+		companies = new ArrayList<>();
+	}
+	
+	public void addCompany(Company company) {
+		this.companies.add(company);
 	}
 	
 	public boolean authenticate() {
@@ -63,8 +68,7 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 
 	@Override
 	public void queryService() {
-		if(!this.config.containsKey("access_token")) {
-			//TODO: toss error
+		if(!this.config.containsKey("access_token") || companies.size() == 0) {
 			return;
 		}
 		
@@ -74,7 +78,6 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 		apiCaller.setHeader("Authorization", "Bearer " + this.config.get("access_token"));
 		apiCaller.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
 		
-		List<Company> companies = DataCollectionRunner.getCompanies();
 		String q = "";
 		for(Company company : companies) {
 			q += " OR " + company.name;
@@ -117,7 +120,7 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 	@Override
 	public Collection<TweetModel> next() {
 		List<TweetModel> ret = new ArrayList<TweetModel>();
-		for(int i = 0 ; i < batchSize && i < this.tweets.size(); i++) {
+		for(int i = 0 ; i < batchSize && this.tweets.size() > 0; i++) {
 			ret.add(this.tweets.remove(0));
 		}
 		return ret;

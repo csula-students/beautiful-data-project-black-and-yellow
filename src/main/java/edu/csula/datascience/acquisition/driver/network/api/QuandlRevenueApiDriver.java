@@ -80,7 +80,7 @@ public class QuandlRevenueApiDriver extends BaseApiDriver<QuandlRevenueModel> {
 	@Override
 	public Collection<QuandlRevenueModel> next() {
 		List<QuandlRevenueModel> ret = new ArrayList<>();
-		for(int i = 0 ; i < batchSize && i < this.dataValues.size(); i++) {
+		for(int i = 0 ; i < batchSize && this.dataValues.size() > 0; i++) {
 			ret.add(this.dataValues.remove(0));
 		}
 		return ret;

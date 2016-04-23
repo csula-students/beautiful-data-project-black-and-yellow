@@ -35,7 +35,10 @@ public class HTTPServiceDriver extends BaseNetworkDriver{
 			for(String key : this.requestData.keySet()) {
 				query += "&" +key + "=" + URLEncoder.encode(this.requestData.get(key),"UTF-8");
 			}
-			query = query.substring(1);
+			
+			if(query.length() > 0) {
+				query = query.substring(1);
+			}
 			
 			System.out.println("URL - GET: " + this.url+"?"+query);
 			HttpGet connection = new HttpGet(this.url+"?"+query);
