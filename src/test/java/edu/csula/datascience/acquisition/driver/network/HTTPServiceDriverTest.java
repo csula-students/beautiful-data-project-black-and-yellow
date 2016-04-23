@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.*;
 
@@ -39,7 +38,7 @@ public class HTTPServiceDriverTest {
 		HTTPServiceDriver Instance = null;
 		String response = null;
 		
-		Instance = new HTTPServiceDriver("http://httpbin.org/get");
+		Instance = new HTTPServiceDriver("http://45.55.6.188/get.php");
 		Instance.setMethodGet();
 		
 		try {
@@ -47,7 +46,6 @@ public class HTTPServiceDriverTest {
 			response = Instance.getContent().trim();
 			Assert.assertNotNull(response);
 			JSONObject json = new JSONObject(response);
-			Assert.assertEquals("http://httpbin.org/get",json.get("url"));
 			Assert.assertNotNull(json.getJSONObject("args"));			
 			Assert.assertNull(json.getJSONObject("args").names());
 		} catch (IOException e) {
@@ -61,7 +59,7 @@ public class HTTPServiceDriverTest {
 		HTTPServiceDriver Instance = null;
 		String response = null;
 		
-		Instance = new HTTPServiceDriver("http://httpbin.org/post");
+		Instance = new HTTPServiceDriver("http://45.55.6.188/post.php");
 		Instance.setMethodPost();
 		
 		try {
@@ -69,7 +67,6 @@ public class HTTPServiceDriverTest {
 			response = Instance.getContent().trim();
 			Assert.assertNotNull(response);
 			JSONObject json = new JSONObject(response);
-			Assert.assertEquals("http://httpbin.org/post",json.get("url"));
 			Assert.assertNotNull(json.getJSONObject("args"));			
 			Assert.assertNull(json.getJSONObject("args").names());
 		} catch (IOException e) {
@@ -84,7 +81,7 @@ public class HTTPServiceDriverTest {
 		String response = null;
 		Random rand = new Random();
 		
-		Instance = new HTTPServiceDriver("http://httpbin.org/get");
+		Instance = new HTTPServiceDriver("http://45.55.6.188/get.php");
 		Instance.setMethodGet();
 		
 		int limit = rand.nextInt() % 5;
@@ -118,12 +115,11 @@ public class HTTPServiceDriverTest {
 	public void testPost() {
 		HTTPServiceDriver Instance = null;
 		String response = null;
-		Random rand = new Random();
 		
-		Instance = new HTTPServiceDriver("http://httpbin.org/post");
+		Instance = new HTTPServiceDriver("http://45.55.6.188/post.php");
 		Instance.setMethodPost();
 		
-		int limit = rand.nextInt() % 5;
+		int limit = 3;
 		HashMap<String,String> data = new HashMap<>();
 		for(int i = 0; i < limit; i++) {
 			String key = shuffle("abcdef123");
