@@ -58,6 +58,37 @@ public class YoutubeApiDriver extends BaseApiDriver<YoutubeModel> {
 
 		this.companies.forEach((company) -> {
 			try {
+				if(company.alias.size() > 0) {
+					company.alias.forEach((alias) -> {
+						try {
+							// Define the API request for retrieving search results.
+					        YouTube.Search.List search = youtube.search().list("id,snippet");
+	
+					        // Set your developer key from the Google Developers Console for
+					        String apiKey = this.config.get("key");
+					        search.setKey(apiKey);
+					        search.setQ(alias);
+					        search.setFields("items(id/channelId,id/videoId,snippet/title,snippet/description,snippet/publishedAt)");
+					        search.setType("video");
+					        search.setMaxResults(50L);
+					        search.setPublishedAfter(dateTime);
+					        SearchListResponse searchResponse = search.execute();
+					        List<SearchResult> searchResultList = searchResponse.getItems();
+					        if (searchResultList != null) {
+					        	Iterator<SearchResult> iter = searchResultList.iterator();
+					        	while(iter.hasNext()) {
+					        		YoutubeModel model = new YoutubeModel(iter.next());
+					        		videos.add(model);
+					        	}
+					        }
+						} catch (GoogleJsonResponseException e) {
+				            System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
+				                    + e.getDetails().getMessage());
+				        } catch (IOException e) {
+				            System.err.println("There was an I/O error: " + e.getCause() + " : " + e.getMessage());
+				        }
+					});
+				}
 				// Define the API request for retrieving search results.
 		        YouTube.Search.List search = youtube.search().list("id,snippet");
 

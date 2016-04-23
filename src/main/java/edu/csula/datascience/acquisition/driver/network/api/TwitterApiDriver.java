@@ -80,8 +80,14 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 		
 		String q = "";
 		for(Company company : companies) {
-			q += " OR " + company.name;
+			q += " OR " + company.name.trim().replaceAll(" ", " OR ");
+			if(company.alias.size() > 0) {
+				for(String alias : company.alias) {
+					q += " OR " + alias.trim().replaceAll(" ", " OR ");
+				}
+			}
 		}
+		
 		q = q.substring(4);
 		apiCaller.setRequestData("q", q+" since:"+date.format(new Date()));
 		apiCaller.setRequestData("lang", "en");
