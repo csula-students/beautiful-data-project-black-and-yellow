@@ -17,6 +17,7 @@ public class TwitterDataCollectorTest {
 	public void testMungee() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
 		TweetDataCollector<TweetModel, TweetModel> dbDriver = new TweetDataCollector<>("localhost","test");
+		dbDriver.setMinute(-5);
 		
 		Assert.assertTrue(dbDriver instanceof BaseMongoDbDataCollector);
 		Assert.assertTrue(dbDriver instanceof BaseDataCollector);
@@ -40,7 +41,6 @@ public class TwitterDataCollectorTest {
 		Assert.assertTrue(newList2.iterator().next() instanceof TweetModel);
 		
 		//Multi Item List Accepts
-		dbDriver.setMinute(-5);
 		List<TweetModel> list4 = new ArrayList<>();
 		for(int i = 0; i < 3; i++) {
 			TweetModel model = new TweetModel();
