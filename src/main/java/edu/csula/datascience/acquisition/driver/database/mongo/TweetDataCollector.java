@@ -15,11 +15,13 @@ import edu.csula.datascience.acquisition.model.TweetModel;
 public class TweetDataCollector<T extends TweetModel,A extends T> extends BaseMongoDbDataCollector<T,A> {
 	private SimpleDateFormat dateParser;
 	private int minutes;
+	private int seconds;
 	
 	public TweetDataCollector(String dbHost,String dbCollection) {
 		super(dbHost,dbCollection);
 		dateParser = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
-		minutes = -5;
+		minutes = 0;
+		seconds = 0;
 	}
 	
 	public TweetDataCollector(String dbHost) {
@@ -29,12 +31,17 @@ public class TweetDataCollector<T extends TweetModel,A extends T> extends BaseMo
 	public void setMinute(int minute){ 
 		this.minutes = minute;
 	}
+	
+	public void setSecond(int second){ 
+		this.seconds = second;
+	}
 
 	@Override
 	public Collection<T> mungee(Collection<A> src) {
 		List<T> ret = new ArrayList<>();
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MINUTE, minutes);
+		calendar.add(Calendar.SECOND, seconds);
 		src.forEach((item) -> {
 			try {
 				Calendar tweetDate = Calendar.getInstance();

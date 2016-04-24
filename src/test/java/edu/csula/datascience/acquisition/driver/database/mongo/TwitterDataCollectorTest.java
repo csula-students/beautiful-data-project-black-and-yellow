@@ -40,6 +40,7 @@ public class TwitterDataCollectorTest {
 		Assert.assertTrue(newList2.iterator().next() instanceof TweetModel);
 		
 		//Multi Item List Accepts
+		dbDriver.setMinute(-5);
 		List<TweetModel> list4 = new ArrayList<>();
 		for(int i = 0; i < 3; i++) {
 			TweetModel model = new TweetModel();

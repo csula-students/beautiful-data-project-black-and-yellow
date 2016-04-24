@@ -17,7 +17,8 @@ public class TwitterApiWorker extends Thread {
 	public void run() {
 		TwitterApiDriver Instance = TwitterApiDriver.getInstance();
 		TweetDataCollector<TweetModel,TweetModel> db = new TweetDataCollector<>(this.dbHost);
-		db.setMinute(-5);
+		//db.setMinute(-5);
+		db.setSecond(-10);
 		
 		List<Company> companies = DataCollectionRunner.getCompanies();
 		for(Company company : companies) {
@@ -31,7 +32,7 @@ public class TwitterApiWorker extends Thread {
 					while(Instance.hasNext()) {
 						db.save(db.mungee(Instance.next()));
 					}
-					Thread.sleep(300000); //5 minutes
+					Thread.sleep(10000); //1 second
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

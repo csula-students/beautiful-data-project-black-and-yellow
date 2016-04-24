@@ -93,6 +93,8 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 		q = q.substring(4);
 		apiCaller.setRequestData("q", q+" since:"+date.format(new Date()));
 		apiCaller.setRequestData("lang", "en");
+		apiCaller.setRequestData("count", "100");
+		apiCaller.setRequestData("result_type", "recent");
 		try {
 			apiCaller.connect();
 			String response = apiCaller.getContent();
