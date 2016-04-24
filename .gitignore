@@ -2,7 +2,7 @@
 .gradle/
 .idea/
 build/
-*.json
+config.json
 .project
 .settings
 .classpath
