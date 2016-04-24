@@ -15,10 +15,15 @@ import edu.csula.datascience.acquisition.model.TweetModel;
 public class TweetDataCollector<T extends TweetModel,A extends T> extends BaseMongoDbDataCollector<T,A> {
 	private SimpleDateFormat dateParser;
 	private int minutes;
-	public TweetDataCollector(String dbHost) {
-		super(dbHost,"tweets");
+	
+	public TweetDataCollector(String dbHost,String dbCollection) {
+		super(dbHost,dbCollection);
 		dateParser = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
 		minutes = -5;
+	}
+	
+	public TweetDataCollector(String dbHost) {
+		this(dbHost,"tweets");
 	}
 	
 	public void setMinute(int minute){ 
@@ -42,8 +47,6 @@ public class TweetDataCollector<T extends TweetModel,A extends T> extends BaseMo
 				//Do nothing
 			}	
 		});
-		//Cleanup
-		src.clear();
 		return ret;
 	}
 

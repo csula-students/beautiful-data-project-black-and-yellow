@@ -2,12 +2,15 @@ package edu.csula.datascience.acquisition.driver.network.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
+import edu.csula.datascience.acquisition.driver.BaseCallable;
 import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
 import edu.csula.datascience.acquisition.model.MarkitOnDemandModel;
 
@@ -19,7 +22,6 @@ public class MarkitOnDemandApiDriver extends BaseApiDriver<MarkitOnDemandModel> 
 	protected String responseFormat;
 	
 	protected List<String> companies;
-	protected List<MarkitOnDemandModel> companyStockValues;
 	
 	public static MarkitOnDemandApiDriver getInstance() {
 		if(Instance == null) {
@@ -30,8 +32,8 @@ public class MarkitOnDemandApiDriver extends BaseApiDriver<MarkitOnDemandModel> 
 	}
 	
 	protected MarkitOnDemandApiDriver() {
+		super();
 		this.companies = new ArrayList<>();
-		this.companyStockValues = new ArrayList<>();
 	}
 	
 	public void addCompanyStock(String stockName) {
@@ -41,52 +43,97 @@ public class MarkitOnDemandApiDriver extends BaseApiDriver<MarkitOnDemandModel> 
 	@Override
 	public void queryService() {		
 		// TODO Auto-generated method stub
-		this.companies.forEach((String stockName)->{
+		for(int i = 0; i < this.companies.size(); i++) {
+			String stockName = this.companies.get(i);
 			HTTPServiceDriver apiScrapper = new HTTPServiceDriver(this.config.get("service")+this.config.get("type"));
 			apiScrapper.setMethodGet();
 			apiScrapper.setRequestData("symbol", stockName);
 			try {
 				apiScrapper.connect();
 				String response = apiScrapper.getContent();
-				JSONObject JSON = new JSONObject(response);
-				if(JSON != null) {
-					MarkitOnDemandModel stockValue = new MarkitOnDemandModel();
-					stockValue.name = JSON.getString("Name");
-					stockValue.change = JSON.getDouble("Change");
-					stockValue.change_percent = JSON.getDouble("ChangePercent");
-					stockValue.change_percent_ytd = JSON.getDouble("ChangePercentYTD");
-					stockValue.high = JSON.getDouble("High");
-					stockValue.last_price = JSON.getDouble("LastPrice");
-					stockValue.low = JSON.getDouble("Low");
-					stockValue.market_cap = JSON.getDouble("MarketCap");
-					stockValue.ms_date = JSON.getDouble("MSDate");
-					stockValue.open = JSON.getDouble("Open");
-					stockValue.symbol = JSON.getString("Symbol");
-					stockValue.timestamp = JSON.getString("Timestamp");
-					stockValue.volume = JSON.getDouble("Volume");
-					companyStockValues.add(stockValue);
+				JSONObject json = new JSONObject(response);
+				if(json != null && !json.has("Message")) {
+					HashMap<String,String> data = new HashMap<>();
+					Iterator<String> keyItr = json.keySet().iterator();
+					while(keyItr.hasNext()) {
+						String key = keyItr.next();
+						data.put(key, json.get(key).toString());
+					}
+					this.data.add(data);
+				}
+			} catch (JSONException e) {
+				if(e.getLocalizedMessage().startsWith("A JSONObject text must begin with '{'")) {
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e1) {
+						//Do nothing
+					}
+					i--;
+					continue;
+				} else {
+					System.out.println("Error with parsing JSON: " + e.getLocalizedMessage());
+					e.printStackTrace();
+				}				
+			} catch (Exception e) {
+				System.out.println(e.getLocalizedMessage());
+				e.printStackTrace();
+			}
+		}		
+	}
+	
+	@Override
+	public void queryService(BaseCallable callable) {		
+		// TODO Auto-generated method stub
+		for(String stockName : this.companies) {
+			HTTPServiceDriver apiScrapper = new HTTPServiceDriver(this.config.get("service")+this.config.get("type"));
+			apiScrapper.setMethodGet();
+			apiScrapper.setRequestData("symbol", stockName);
+			try {
+				apiScrapper.connect();
+				String response = apiScrapper.getContent();
+				JSONObject json = new JSONObject(response);
+				if(json != null) {
+					callable.call(json);
 				}
 			} catch (JSONException e) {
 				System.out.println("Error with parsing JSON: " + e.getLocalizedMessage());
+				e.printStackTrace();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				//Failed to connect to api server
+				System.out.println(e.getLocalizedMessage());
+				e.printStackTrace();
 			}
-		});
-		
-	}
-
-	@Override
-	public boolean hasNext() {
-		return this.companyStockValues.size() > 0;
+		}		
 	}
 
 	@Override
 	public Collection<MarkitOnDemandModel> next() {
 		List<MarkitOnDemandModel> ret = new ArrayList<MarkitOnDemandModel>();
-		for(int i = 0 ; i < batchSize && this.companyStockValues.size() > 0; i++) {
-			ret.add(this.companyStockValues.remove(0));
+		while(this.data.size() > 0 && ret.size() < this.batchSize) {
+			HashMap<String,String> row = this.data.remove(0);
+			
+			try {
+				MarkitOnDemandModel model = new MarkitOnDemandModel();
+				model.name = row.get("Name");
+				model.change = Double.valueOf(row.get("Change"));
+				model.change_percent = Double.valueOf(row.get("ChangePercent"));
+				model.change_percent_ytd = Double.valueOf(row.get("ChangePercentYTD"));
+				model.high = Double.valueOf(row.get("High"));
+				model.last_price = Double.valueOf(row.get("LastPrice"));
+				model.low = Double.valueOf(row.get("Low"));
+				model.market_cap = Double.valueOf(row.get("MarketCap"));
+				model.ms_date = Double.valueOf(row.get("MSDate"));
+				model.open = Double.valueOf(row.get("Open"));
+				model.symbol = row.get("Symbol");
+				model.timestamp = row.get("Timestamp");
+				model.volume = Double.valueOf(row.get("Volume"));
+				
+				ret.add(model);
+			} catch(NullPointerException e) {
+				//Dirty Data
+			}			
 		}
+		
 		return ret;
 	}
 }

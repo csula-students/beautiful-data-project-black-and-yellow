@@ -10,16 +10,17 @@ import org.bson.Document;
 import edu.csula.datascience.acquisition.model.MarkitOnDemandModel;
 
 public class MODDataCollector<T extends MarkitOnDemandModel,A extends T> extends BaseMongoDbDataCollector<T,A>  {
+	public MODDataCollector(String dbHost, String dbCollection) {
+		super(dbHost,dbCollection);
+	}
 	public MODDataCollector(String dbHost) {
-		super(dbHost,"stocks");
+		this(dbHost,"stocks");
 	}
 	
 	@Override
 	public Collection<T> mungee(Collection<A> src) {
 		List<T> ret = new ArrayList<>();
 		ret.addAll(src);
-		//Cleanup
-		src.clear();
 		return ret;
 	}
 

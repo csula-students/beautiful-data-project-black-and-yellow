@@ -2,6 +2,7 @@ package edu.csula.datascience.acquisition.runner;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import edu.csula.datascience.acquisition.driver.callable.SaveToFileCallable;
 import edu.csula.datascience.acquisition.driver.network.api.MarkitOnDemandApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.QuandlRevenueApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.QuandlStockApiDriver;
@@ -39,14 +41,7 @@ public class DataCollectionRunner {
 		threads = new ArrayList<>();
 	}
 	
-	protected void run() {
-		//Load Configs
-		MarkitOnDemandApiDriver.getInstance().setConfigData(apiConfigs.get(MOD));
-		YoutubeApiDriver.getInstance().setConfigData(apiConfigs.get(GOOGLE));
-		TwitterApiDriver.getInstance().setConfigData(apiConfigs.get(TWITTER));
-		QuandlStockApiDriver.getInstance().setConfigData(apiConfigs.get(QUANDL));
-		QuandlRevenueApiDriver.getInstance().setConfigData(apiConfigs.get(QUANDL));
-		
+	protected void runDataWorkers() {
 		//Load & Start Workers
 		MODApiWorker worker1 = new MODApiWorker(this.dbHost);
 		worker1.start();
@@ -75,6 +70,36 @@ public class DataCollectionRunner {
 				}
 				continue;
 			}
+		}
+	}
+	
+	public void runDataSaver() {
+		for(Company company : companies) {
+			for(String stock : company.stock) {
+				QuandlRevenueApiDriver.getInstance().addCompanyStock(stock);
+				QuandlStockApiDriver.getInstance().addCompanyStock(stock);
+			}
+		}
+		
+		SaveToFileCallable revCallable = new SaveToFileCallable("./quandle_revenue.csv",",");
+		SaveToFileCallable stockCallable = new SaveToFileCallable("./quandle_stock.csv",",");
+		
+		try {
+			revCallable.open();
+			QuandlRevenueApiDriver.getInstance().queryService(revCallable);
+			revCallable.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			stockCallable.open();
+			QuandlStockApiDriver.getInstance().queryService(stockCallable);
+			stockCallable.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -142,8 +167,19 @@ public class DataCollectionRunner {
 				}
 			}
 			
+			//Load Configs
+			MarkitOnDemandApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(MOD));
+			YoutubeApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(GOOGLE));
+			TwitterApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(TWITTER));
+			QuandlStockApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(QUANDL));
+			QuandlRevenueApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(QUANDL));
+			
 			Instance.dbHost = json.getString("dbHost");
-			Instance.run();
+			if(args.length > 0 && args[0].equalsIgnoreCase("--save-data")) {
+				Instance.runDataSaver();
+			} else {
+				Instance.runDataWorkers();
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

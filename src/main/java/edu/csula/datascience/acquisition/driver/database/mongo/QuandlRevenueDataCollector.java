@@ -8,16 +8,17 @@ import org.bson.Document;
 import edu.csula.datascience.acquisition.model.QuandlRevenueModel;
 
 public class QuandlRevenueDataCollector<T extends QuandlRevenueModel, A extends T> extends BaseMongoDbDataCollector<T,A> {
+	public QuandlRevenueDataCollector(String dbHost,String dbCollection) {
+		super(dbHost,dbCollection);
+	}
 	public QuandlRevenueDataCollector(String dbHost) {
-		super(dbHost,"quandl_revenue");
+		this(dbHost,"quandl_revenue");
 	}
 	
 	@Override
 	public Collection<T> mungee(Collection<A> src) {
 		List<T> ret = new ArrayList<>();
 		ret.addAll(src);
-		//Cleanup
-		src.clear();
 		return ret;
 	}
 

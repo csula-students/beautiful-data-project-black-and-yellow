@@ -10,15 +10,17 @@ import org.bson.Document;
 import edu.csula.datascience.acquisition.model.YoutubeModel;
 
 public class YoutubeDataCollector<T extends YoutubeModel,A extends T> extends BaseMongoDbDataCollector<T,A> {
+	public YoutubeDataCollector(String dbHost,String dbCollection) {
+		super(dbHost,dbCollection);
+	}
+	
 	public YoutubeDataCollector(String dbHost) {
-		super(dbHost,"youtubes");
+		this(dbHost,"youtubes");
 	}
 	@Override
 	public Collection<T> mungee(Collection<A> src) {
 		List<T> ret = new ArrayList<>();
 		ret.addAll(src);
-		//Cleanup
-		src.clear();
 		return ret;
 	}
 

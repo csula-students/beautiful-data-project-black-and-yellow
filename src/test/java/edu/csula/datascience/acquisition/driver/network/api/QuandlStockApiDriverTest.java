@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.junit.*;
 
+import edu.csula.datascience.acquisition.Source;
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.BaseApiDriverTest;
 import edu.csula.datascience.acquisition.model.Company;
@@ -21,6 +22,7 @@ public class QuandlStockApiDriverTest extends BaseApiDriverTest {
 	@Test
 	public void testInheritence() {
 		Assert.assertTrue(Instance instanceof BaseApiDriver);
+		Assert.assertTrue(Instance instanceof Source);
 		Assert.assertEquals(Instance.getConfigData(), apiConfigs.get(QUANDL));
 	}
 	
@@ -36,13 +38,10 @@ public class QuandlStockApiDriverTest extends BaseApiDriverTest {
 		}
 		
 		Instance.queryService();
-		Instance.setBatchSize(Integer.MAX_VALUE);
 		
 		Assert.assertTrue(Instance.hasNext());
 		Collection<QuandlStockModel> list = Instance.next();
 		Assert.assertNotNull(list);
 		Assert.assertTrue(list.size() > 0);
-		
-		Assert.assertFalse(Instance.hasNext());
 	}
 }

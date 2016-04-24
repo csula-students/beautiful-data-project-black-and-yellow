@@ -16,12 +16,15 @@ public abstract class BaseNetworkDriver extends BaseDriver {
 	protected String method;
 	protected HashMap<String,String> requestData;
 	protected HashMap<String,String> requestHeaderData;
-	protected HttpClient connection;
-	protected HttpResponse response;
+	protected HttpClient connection = null;
+	protected HttpResponse response = null;
 	
 	abstract public void connect() throws IOException;
 	
-	public String getContent() {
+	public String getContent() throws IOException{
+		if(this.response == null) {
+			throw new IOException("You need to establish a connection first");
+		}
 		String response = "";
 		
 		HttpEntity entity = this.response.getEntity();
@@ -43,7 +46,11 @@ public abstract class BaseNetworkDriver extends BaseDriver {
 		return response;
 	}
 	
-	public InputStream getInputStream() {
+	public InputStream getInputStream() throws IOException {
+		if(this.response == null) {
+			throw new IOException("You need to establish a connection first");
+		}
+		
 		HttpEntity entity = this.response.getEntity();
 		if(entity != null) {
 			InputStream iStream = null;

@@ -10,16 +10,17 @@ import org.bson.Document;
 import edu.csula.datascience.acquisition.model.QuandlStockModel;
 
 public class QuandlStockDataCollector<T extends QuandlStockModel, A extends T> extends BaseMongoDbDataCollector<T,A> {
+	public QuandlStockDataCollector(String dbHost,String dbCollection) {
+		super(dbHost,dbCollection);
+	}
 	public QuandlStockDataCollector(String dbHost) {
-		super(dbHost,"quandl_stocks");
+		this(dbHost,"quandl_stocks");
 	}
 	
 	@Override
 	public Collection<T> mungee(Collection<A> src) {
 		List<T> ret = new ArrayList<>();
 		ret.addAll(src);
-		//Cleanup
-		src.clear();
 		return ret;
 	}
 
@@ -27,7 +28,7 @@ public class QuandlStockDataCollector<T extends QuandlStockModel, A extends T> e
 	public void save(Collection<T> data) {
 		List<Document> documents = data.stream()
 			.map(item -> new Document()
-					.append("stock", item.stock)
+					.append("stock", item.name)
 					.append("date", item.date)
 					.append("open", item.open)
 					.append("high", item.high)

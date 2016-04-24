@@ -1,11 +1,11 @@
 package edu.csula.datascience.acquisition.model;
 
 public class QuandlStockModel {
-	public String stock;
+	public String name;
 	public String date;
-	public String open;
-	public String high;
-	public String low;
-	public String close;
-	public String volume;
+	public double open;
+	public double high;
+	public double low;
+	public double close;
+	public double volume;
 }

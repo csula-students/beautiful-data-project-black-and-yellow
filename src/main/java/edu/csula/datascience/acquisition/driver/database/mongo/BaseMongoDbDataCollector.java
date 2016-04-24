@@ -37,4 +37,8 @@ public abstract class BaseMongoDbDataCollector<T,A> extends BaseDataCollector<T,
     	System.out.println("Saving one document to " + this.collectionName);
     	collection.insertOne(document);
     }
+    
+    public final void close() {
+    	mongoClient.close();
+    }
 }

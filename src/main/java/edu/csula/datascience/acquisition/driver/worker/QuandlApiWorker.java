@@ -32,6 +32,12 @@ public class QuandlApiWorker extends Thread {
 			}
 		}
 		
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			//Do nothing
+		}
+		
 		stockInstance.queryService();
 		while(stockInstance.hasNext()) {
 			dbStockDriver.save(dbStockDriver.mungee(stockInstance.next()));
