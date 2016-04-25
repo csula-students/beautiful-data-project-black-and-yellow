@@ -10,3 +10,4 @@ config.json
 .classpath
 /bin/
 *.env
+quandl/*.csv
