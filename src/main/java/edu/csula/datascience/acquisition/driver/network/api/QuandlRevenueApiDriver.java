@@ -15,17 +15,7 @@ import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
 import edu.csula.datascience.acquisition.model.QuandlRevenueModel;
 
 public class QuandlRevenueApiDriver extends BaseApiDriver<QuandlRevenueModel> {
-	private static QuandlRevenueApiDriver Instance = null;
-
 	protected List<String> companies;
-
-	public static QuandlRevenueApiDriver getInstance() {
-		if(Instance == null) {
-			Instance = new QuandlRevenueApiDriver();
-		}
-
-		return Instance;
-	}
 
 	public QuandlRevenueApiDriver() {
 		super();
@@ -51,7 +41,7 @@ public class QuandlRevenueApiDriver extends BaseApiDriver<QuandlRevenueModel> {
 					Scanner reader = new Scanner(iStream);
 					//Dump the first line
 					if(reader.hasNext()) {
-						reader.next();
+						reader.nextLine();
 					}
 
 					while(reader.hasNext()) {

@@ -19,6 +19,10 @@
 			"key":"vTdaA-ZbqiSEaNRiGi7B",
 			"wiki":"https://www.quandl.com/api/v3/datasets/WIKI/",
 			"revenue":"https://www.quandl.com/api/v3/datasets/SEC/"
+		},
+		"amazon":{
+			"nasdaq":"https://s3.amazonaws.com/quandl-static-content/Ticker+CSV%27s/Stock+Exchanges/NASDAQ.csv",
+			"nyse":"https://s3.amazonaws.com/quandl-static-content/Ticker+CSV%27s/Stock+Exchanges/NYSE.csv"
 		}
 	},
 	"companies":[

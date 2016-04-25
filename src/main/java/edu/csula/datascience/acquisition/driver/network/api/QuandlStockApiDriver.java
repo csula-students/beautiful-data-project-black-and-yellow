@@ -15,23 +15,11 @@ import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
 import edu.csula.datascience.acquisition.model.QuandlStockModel;
 
 public class QuandlStockApiDriver extends BaseApiDriver<QuandlStockModel> {
-	private static QuandlStockApiDriver Instance = null;
-	
 	protected List<String> companies;
-	protected List<QuandlStockModel> dataValues;
-	
-	public static QuandlStockApiDriver getInstance() {
-		if(Instance == null) {
-			Instance = new QuandlStockApiDriver();
-		}
-		
-		return Instance;
-	}
 	
 	public QuandlStockApiDriver() {
 		super();
 		this.companies = new ArrayList<>();
-		this.dataValues = new ArrayList<>();
 	}
 	
 	public void addCompanyStock(String stockName) {
@@ -53,7 +41,7 @@ public class QuandlStockApiDriver extends BaseApiDriver<QuandlStockModel> {
 					Scanner reader = new Scanner(iStream);
 					//Dump the first line
 					if(reader.hasNext()) {
-						reader.next();
+						reader.nextLine();
 					}
 					
 					while(reader.hasNext()) {

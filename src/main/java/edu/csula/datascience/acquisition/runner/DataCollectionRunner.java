@@ -2,7 +2,6 @@ package edu.csula.datascience.acquisition.runner;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,14 +10,11 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import edu.csula.datascience.acquisition.driver.callable.SaveToFileCallable;
 import edu.csula.datascience.acquisition.driver.network.api.MarkitOnDemandApiDriver;
-import edu.csula.datascience.acquisition.driver.network.api.QuandlRevenueApiDriver;
-import edu.csula.datascience.acquisition.driver.network.api.QuandlStockApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.YoutubeApiDriver;
 import edu.csula.datascience.acquisition.driver.worker.MODApiWorker;
-import edu.csula.datascience.acquisition.driver.worker.QuandlApiWorker;
+import edu.csula.datascience.acquisition.driver.worker.DataSaverWorker;
 import edu.csula.datascience.acquisition.driver.worker.TwitterApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.YoutubeApiWorker;
 import edu.csula.datascience.acquisition.model.Company;
@@ -30,6 +26,7 @@ public class DataCollectionRunner {
 	public static final String TWITTER = "twitter";
 	public static final String GOOGLE = "google";
 	public static final String QUANDL = "quandl";
+	public static final String AMAZON = "amazon";
 	
 	protected String dbHost;
 	protected List<Company> companies;
@@ -55,10 +52,6 @@ public class DataCollectionRunner {
 		worker3.start();
 		threads.add(worker3);
 		
-		QuandlApiWorker worker4 = new QuandlApiWorker(this.dbHost);
-		worker4.start();
-		threads.add(worker4);
-		
 		//Keep parent alive until children are finished
 		for(Thread thread : threads) {
 			if(thread.isAlive()) {
@@ -74,32 +67,21 @@ public class DataCollectionRunner {
 	}
 	
 	public void runDataSaver() {
-		for(Company company : companies) {
-			for(String stock : company.stock) {
-				QuandlRevenueApiDriver.getInstance().addCompanyStock(stock);
-				QuandlStockApiDriver.getInstance().addCompanyStock(stock);
+		DataSaverWorker worker4 = new DataSaverWorker(this.dbHost);
+		worker4.start();
+		threads.add(worker4);
+		
+		//Keep parent alive until children are finished
+		for(Thread thread : threads) {
+			if(thread.isAlive()) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				continue;
 			}
-		}
-		
-		SaveToFileCallable revCallable = new SaveToFileCallable("./quandle_revenue.csv",",");
-		SaveToFileCallable stockCallable = new SaveToFileCallable("./quandle_stock.csv",",");
-		
-		try {
-			revCallable.open();
-			QuandlRevenueApiDriver.getInstance().queryService(revCallable);
-			revCallable.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		try {
-			stockCallable.open();
-			QuandlStockApiDriver.getInstance().queryService(stockCallable);
-			stockCallable.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	
@@ -154,7 +136,7 @@ public class DataCollectionRunner {
 			
 			item = json.getJSONObject("api");
 			if(item != null) {
-				String[] names = {GOOGLE,TWITTER,MOD,QUANDL};
+				String[] names = {GOOGLE,TWITTER,MOD,QUANDL,AMAZON};
 				for(String name : names) {
 					JSONObject _item = item.getJSONObject(name);
 					HashMap<String,String> data = new HashMap<>();
@@ -171,8 +153,6 @@ public class DataCollectionRunner {
 			MarkitOnDemandApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(MOD));
 			YoutubeApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(GOOGLE));
 			TwitterApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(TWITTER));
-			QuandlStockApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(QUANDL));
-			QuandlRevenueApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(QUANDL));
 			
 			Instance.dbHost = json.getString("dbHost");
 			if(args.length > 0 && args[0].equalsIgnoreCase("--save-data")) {

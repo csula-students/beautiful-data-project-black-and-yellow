@@ -41,4 +41,8 @@ public abstract class BaseMongoDbDataCollector<T,A> extends BaseDataCollector<T,
     public final void close() {
     	mongoClient.close();
     }
+    
+    public void dropCollection() {
+    	collection.drop();
+    }
 }
