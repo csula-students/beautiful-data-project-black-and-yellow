@@ -23,7 +23,7 @@
 		"amazon":{
 			"nasdaq":"https://s3.amazonaws.com/quandl-static-content/Ticker+CSV%27s/Stock+Exchanges/NASDAQ.csv",
 			"nyse":"https://s3.amazonaws.com/quandl-static-content/Ticker+CSV%27s/Stock+Exchanges/NYSE.csv"
-		}
+		},
 		"elasticsearch":{
 			"name":"cs454-datascience-blackandyellow",
 			"address":"127.0.0.1"
