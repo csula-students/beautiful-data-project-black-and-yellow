@@ -1,15 +1,19 @@
 package edu.csula.datascience.acquisition.driver.database.mongo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
 import org.json.JSONObject;
 
+import com.mongodb.CursorType;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
 import edu.csula.datascience.acquisition.driver.database.BaseDataCollector;
@@ -73,7 +77,11 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
     
     public void fetchAll(Callable<?> callback,T model) {
     	FindIterable<Document> results = collection.find();
-    	for(Document row : results) {
+    	results.cursorType(CursorType.TailableAwait);
+    	results.maxTime(Long.MAX_VALUE, TimeUnit.SECONDS);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		Document row = itr.next();
     		model.parseJSONObject(new JSONObject(row.toJson()));
     		try {
 				callback.call();
