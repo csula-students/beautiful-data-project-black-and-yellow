@@ -3,7 +3,6 @@ package edu.csula.datascience.acquisition.driver.worker;
 import java.util.Collection;
 
 import edu.csula.datascience.acquisition.driver.callable.CompareRowsCallable;
-import edu.csula.datascience.acquisition.driver.callable.FindDataCallable;
 import edu.csula.datascience.acquisition.driver.callable.QuandlFindDataCallable;
 import edu.csula.datascience.acquisition.driver.database.mongo.ext.QuandlRevenueDataCollector;
 import edu.csula.datascience.acquisition.driver.database.mongo.ext.QuandlStockDataCollector;
@@ -44,11 +43,12 @@ public class EvaluateDataWorker extends Thread {
 				for(AmazonModel model : list) {
 					EvaluateThreadHelper helper = null;
 					while(true) {
-						for(EvaluateThreadHelper item : helpers) {
-							if(!item.isAlive()){
-								helper = item;
+						for(int i = 0; i < limit; i++) {
+							if(!helpers[i].isAlive()) {
+								helpers[i] = new EvaluateThreadHelper(this.dbRevDriver,this.dbSckDriver);
+								helper = helpers[i];
 								break;
-							}
+							}							
 						}
 						
 						if(helper == null) {

@@ -15,6 +15,7 @@ import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.YoutubeApiDriver;
 import edu.csula.datascience.acquisition.driver.worker.MODApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.DataSaverWorker;
+import edu.csula.datascience.acquisition.driver.worker.EvaluateDataWorker;
 import edu.csula.datascience.acquisition.driver.worker.TwitterApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.YoutubeApiWorker;
 import edu.csula.datascience.acquisition.model.Company;
@@ -86,8 +87,22 @@ public class DataCollectionRunner {
 	}
 	
 	public void runDataEvaluation() {
-		// TODO Auto-generated method stub
+		EvaluateDataWorker worker = new EvaluateDataWorker(this.dbHost);
+		worker.start();
+		threads.add(worker);
 		
+		//Keep parent alive until children are finished
+		for(Thread thread : threads) {
+			if(thread.isAlive()) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				continue;
+			}
+		}
 	}
 	
 	public static List<Company> getCompanies() {
