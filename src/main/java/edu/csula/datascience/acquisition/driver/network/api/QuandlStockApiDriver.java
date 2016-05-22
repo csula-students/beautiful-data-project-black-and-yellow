@@ -54,7 +54,7 @@ public class QuandlStockApiDriver extends BaseApiDriver<QuandlStockModel>  {
 							String[] parts = line.split(",");
 							HashMap<String,String> data = new HashMap<String,String>();
 							if(parts.length >= 13) {
-								data.put("name", stockName);
+								data.put("stock", stockName);
 								data.put("date",parts[0]);
 								data.put("open", parts[1]);
 								data.put("high", parts[2]);
