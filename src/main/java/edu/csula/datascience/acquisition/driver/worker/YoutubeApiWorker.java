@@ -1,8 +1,7 @@
 package edu.csula.datascience.acquisition.driver.worker;
 
-import edu.csula.datascience.acquisition.driver.database.mongo.YoutubeDataCollector;
+import edu.csula.datascience.acquisition.driver.database.mongo.ext.YoutubeDataCollector;
 import edu.csula.datascience.acquisition.driver.network.api.YoutubeApiDriver;
-import edu.csula.datascience.acquisition.model.YoutubeModel;
 import edu.csula.datascience.acquisition.runner.DataCollectionRunner;
 
 public class YoutubeApiWorker extends Thread {
@@ -14,7 +13,7 @@ public class YoutubeApiWorker extends Thread {
 	
 	public void run() {
 		YoutubeApiDriver Instance = YoutubeApiDriver.getInstance();
-		YoutubeDataCollector<YoutubeModel,YoutubeModel> db = new YoutubeDataCollector<>(this.dbHost);
+		YoutubeDataCollector db = new YoutubeDataCollector(this.dbHost);
 		DataCollectionRunner.getCompanies().forEach((company) -> {
 			Instance.addCompanyStock(company);
 		});

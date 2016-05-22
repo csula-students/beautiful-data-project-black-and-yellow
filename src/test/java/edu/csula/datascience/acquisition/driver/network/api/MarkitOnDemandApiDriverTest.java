@@ -7,7 +7,7 @@ import org.junit.*;
 import edu.csula.datascience.acquisition.Source;
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.BaseApiDriverTest;
-import edu.csula.datascience.acquisition.model.MarkitOnDemandModel;
+import edu.csula.datascience.acquisition.model.database.MarkitOnDemandModel;
 
 public class MarkitOnDemandApiDriverTest extends BaseApiDriverTest {
 	MarkitOnDemandApiDriver Instance;

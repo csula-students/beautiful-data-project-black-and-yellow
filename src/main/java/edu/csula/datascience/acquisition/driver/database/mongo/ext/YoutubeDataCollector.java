@@ -1,4 +1,4 @@
-package edu.csula.datascience.acquisition.driver.database.mongo;
+package edu.csula.datascience.acquisition.driver.database.mongo.ext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,9 +7,10 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 
-import edu.csula.datascience.acquisition.model.YoutubeModel;
+import edu.csula.datascience.acquisition.driver.database.mongo.BaseMongoDbDataCollector;
+import edu.csula.datascience.acquisition.model.database.YoutubeModel;
 
-public class YoutubeDataCollector<T extends YoutubeModel,A extends T> extends BaseMongoDbDataCollector<T,A> {
+public class YoutubeDataCollector extends BaseMongoDbDataCollector<YoutubeModel,YoutubeModel> {
 	public YoutubeDataCollector(String dbHost,String dbCollection) {
 		super(dbHost,dbCollection);
 	}
@@ -18,21 +19,21 @@ public class YoutubeDataCollector<T extends YoutubeModel,A extends T> extends Ba
 		this(dbHost,"youtubes");
 	}
 	@Override
-	public Collection<T> mungee(Collection<A> src) {
-		List<T> ret = new ArrayList<>();
+	public Collection<YoutubeModel> mungee(Collection<YoutubeModel> src) {
+		List<YoutubeModel> ret = new ArrayList<>();
 		ret.addAll(src);
 		return ret;
 	}
 
 	@Override
-	public void save(Collection<T> data) {
+	public void save(Collection<YoutubeModel> data) {
 		List<Document> documents = data.stream()
 			.map(item -> new Document()
 					.append("id", item.id)
 					.append("channel_id", item.channel_id)
 					.append("title", item.title)
 					.append("description", item.description)
-					.append("published", item.published.getValue())
+					.append("published", item.published)
 				)
 	            .collect(Collectors.toList());
 

@@ -1,6 +1,5 @@
 package edu.csula.datascience.acquisition.driver.database.mongo;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -10,13 +9,13 @@ import org.junit.*;
 
 import edu.csula.datascience.acquisition.Collector;
 import edu.csula.datascience.acquisition.driver.database.BaseDataCollector;
-import edu.csula.datascience.acquisition.model.TweetModel;
+import edu.csula.datascience.acquisition.driver.database.mongo.ext.TweetDataCollector;
+import edu.csula.datascience.acquisition.model.database.TweetModel;
 
 public class TwitterDataCollectorTest {	
 	@Test
 	public void testMungee() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
-		TweetDataCollector<TweetModel, TweetModel> dbDriver = new TweetDataCollector<>("localhost","test");
+		TweetDataCollector dbDriver = new TweetDataCollector("localhost","test");
 		dbDriver.setMinute(-5);
 		
 		Assert.assertTrue(dbDriver instanceof BaseMongoDbDataCollector);
@@ -33,7 +32,7 @@ public class TwitterDataCollectorTest {
 		for(int i = 0; i < 1; i++) {
 			TweetModel model = new TweetModel();
 			model.id = i;
-			model.created_at = dateFormat.format(new Date());
+			model.created_at = new Date();
 			list2.add(model);
 		}
 		Collection<TweetModel> newList2 = dbDriver.mungee(list2);	
@@ -45,7 +44,7 @@ public class TwitterDataCollectorTest {
 		for(int i = 0; i < 3; i++) {
 			TweetModel model = new TweetModel();
 			model.id = i;
-			model.created_at = dateFormat.format(new Date());
+			model.created_at = new Date();
 			list4.add(model);
 		}
 		List<TweetModel> newList4 = (List<TweetModel>)dbDriver.mungee(list4);	
@@ -61,7 +60,7 @@ public class TwitterDataCollectorTest {
 		for(int i = 0; i < 3; i++) {
 			TweetModel model = new TweetModel();
 			model.id = i;
-			model.created_at = dateFormat.format(calendar.getTime());
+			model.created_at = calendar.getTime();
 			list5.add(model);
 		}
 		Collection<TweetModel> newList5 = dbDriver.mungee(list5);	

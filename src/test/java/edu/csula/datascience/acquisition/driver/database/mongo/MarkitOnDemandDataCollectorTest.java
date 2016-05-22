@@ -7,12 +7,13 @@ import org.junit.*;
 
 import edu.csula.datascience.acquisition.Collector;
 import edu.csula.datascience.acquisition.driver.database.BaseDataCollector;
-import edu.csula.datascience.acquisition.model.MarkitOnDemandModel;
+import edu.csula.datascience.acquisition.driver.database.mongo.ext.MODDataCollector;
+import edu.csula.datascience.acquisition.model.database.MarkitOnDemandModel;
 
 public class MarkitOnDemandDataCollectorTest {	
 	@Test
 	public void testMungee() {
-		MODDataCollector<MarkitOnDemandModel, MarkitOnDemandModel> dbDriver = new MODDataCollector<>("localhost","test");
+		MODDataCollector dbDriver = new MODDataCollector("localhost","test");
 		
 		Assert.assertTrue(dbDriver instanceof BaseMongoDbDataCollector);
 		Assert.assertTrue(dbDriver instanceof BaseDataCollector);

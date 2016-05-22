@@ -7,12 +7,13 @@ import org.junit.*;
 
 import edu.csula.datascience.acquisition.Collector;
 import edu.csula.datascience.acquisition.driver.database.BaseDataCollector;
-import edu.csula.datascience.acquisition.model.QuandlRevenueModel;
+import edu.csula.datascience.acquisition.driver.database.mongo.ext.QuandlRevenueDataCollector;
+import edu.csula.datascience.acquisition.model.database.QuandlRevenueModel;
 
 public class QuandlRevenueDataCollectorTest {	
 	@Test
 	public void testMungee() {
-		QuandlRevenueDataCollector<QuandlRevenueModel, QuandlRevenueModel> dbDriver = new QuandlRevenueDataCollector<>("localhost","test");
+		QuandlRevenueDataCollector dbDriver = new QuandlRevenueDataCollector("localhost","test");
 		
 		Assert.assertTrue(dbDriver instanceof BaseMongoDbDataCollector);
 		Assert.assertTrue(dbDriver instanceof BaseDataCollector);

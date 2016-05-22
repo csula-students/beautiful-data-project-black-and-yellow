@@ -1,7 +1,5 @@
-package edu.csula.datascience.acquisition.driver.database.mongo;
+package edu.csula.datascience.acquisition.driver.database.mongo.ext;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -10,16 +8,15 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 
-import edu.csula.datascience.acquisition.model.TweetModel;
+import edu.csula.datascience.acquisition.driver.database.mongo.BaseMongoDbDataCollector;
+import edu.csula.datascience.acquisition.model.database.TweetModel;
 
-public class TweetDataCollector<T extends TweetModel,A extends T> extends BaseMongoDbDataCollector<T,A> {
-	private SimpleDateFormat dateParser;
+public class TweetDataCollector extends BaseMongoDbDataCollector<TweetModel,TweetModel> {
 	private int minutes;
 	private int seconds;
 	
 	public TweetDataCollector(String dbHost,String dbCollection) {
 		super(dbHost,dbCollection);
-		dateParser = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
 		minutes = 0;
 		seconds = 0;
 	}
@@ -37,28 +34,23 @@ public class TweetDataCollector<T extends TweetModel,A extends T> extends BaseMo
 	}
 
 	@Override
-	public Collection<T> mungee(Collection<A> src) {
-		List<T> ret = new ArrayList<>();
+	public Collection<TweetModel> mungee(Collection<TweetModel> src) {
+		List<TweetModel> ret = new ArrayList<>();
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MINUTE, minutes);
 		calendar.add(Calendar.SECOND, seconds);
 		src.forEach((item) -> {
-			try {
-				Calendar tweetDate = Calendar.getInstance();
-				tweetDate.setTime(dateParser.parse(item.created_at));
-				if(calendar.compareTo(tweetDate) <= 0) {
-					ret.add((T)item);
-				}
-				
-			} catch (ParseException e) {
-				//Do nothing
-			}	
+			Calendar tweetDate = Calendar.getInstance();
+			tweetDate.setTime(item.created_at);
+			if(calendar.compareTo(tweetDate) <= 0) {
+				ret.add((TweetModel)item);
+			}
 		});
 		return ret;
 	}
 
 	@Override
-	public void save(Collection<T> data) {
+	public void save(Collection<TweetModel> data) {
 		List<Document> documents = data.stream()
 			.map(item -> new Document()
 					.append("id", item.id)

@@ -22,7 +22,7 @@ import com.google.api.services.youtube.model.SearchResult;
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.BaseCallable;
 import edu.csula.datascience.acquisition.model.Company;
-import edu.csula.datascience.acquisition.model.YoutubeModel;
+import edu.csula.datascience.acquisition.model.database.YoutubeModel;
 
 public class YoutubeApiDriver extends BaseApiDriver<YoutubeModel> {
 	private static YoutubeApiDriver Instance = null;
@@ -138,7 +138,7 @@ public class YoutubeApiDriver extends BaseApiDriver<YoutubeModel> {
 			model.id = row.get("video_id");
 			model.description = row.get("description");
 			model.title = row.get("title");
-			model.published = new DateTime(row.get("published_at"));
+			model.published = new Date(DateTime.parseRfc3339(row.get("published_at")).getValue());
 			ret.add(model);
 		}
 		return ret;

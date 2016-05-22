@@ -1,21 +1,27 @@
 package edu.csula.datascience.acquisition.driver.database.mongo;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.bson.Document;
+import org.json.JSONObject;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import edu.csula.datascience.acquisition.driver.database.BaseDataCollector;
+import edu.csula.datascience.acquisition.driver.database.BaseDatabaseModel;
+import edu.csula.datascience.acquisition.model.query.MongoQueryModel;
 
-public abstract class BaseMongoDbDataCollector<T,A> extends BaseDataCollector<T,A> {
-	private MongoClient mongoClient;
-	private MongoDatabase database;
-	private MongoCollection<Document> collection;
-	private static String dbName = "homework2";
-	private String collectionName;
+public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A extends T> extends BaseDataCollector<T,A,MongoQueryModel> {
+	protected MongoClient mongoClient;
+	protected MongoDatabase database;
+	protected MongoCollection<Document> collection;
+	protected static String dbName = "datascience";
+	protected String collectionName;
     
 	public BaseMongoDbDataCollector(String dbHost, String collectionName) {
 		// establish database connection to MongoDB
@@ -44,5 +50,37 @@ public abstract class BaseMongoDbDataCollector<T,A> extends BaseDataCollector<T,
     
     public void dropCollection() {
     	collection.drop();
+    }
+    
+	public T find(MongoQueryModel queryModel,T model) {
+    	FindIterable<Document> results = collection.find(queryModel.toBson());
+    	for(Document row : results) {
+    		model.parseJSONObject(new JSONObject(row.toJson()));
+    		return model;
+    	}
+    	return null;
+    }
+    
+	public List<T> findAll(MongoQueryModel queryModel,T model) {
+    	List<T> list = new ArrayList<T>();
+    	FindIterable<Document> results = collection.find(queryModel.toBson());
+    	for(Document row : results) {
+    		model.parseJSONObject(new JSONObject(row.toJson()));
+    		list.add((T)model.clone());
+    	}
+    	return null;
+    }
+    
+    public void fetchAll(Callable<?> callback,T model) {
+    	FindIterable<Document> results = collection.find();
+    	for(Document row : results) {
+    		model.parseJSONObject(new JSONObject(row.toJson()));
+    		try {
+				callback.call();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     }
 }

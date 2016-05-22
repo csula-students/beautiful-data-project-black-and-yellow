@@ -38,7 +38,7 @@ public class DataCollectionRunner {
 		threads = new ArrayList<>();
 	}
 	
-	protected void runDataWorkers() {
+	public void runDataWorkers() {
 		//Load & Start Workers
 		MODApiWorker worker1 = new MODApiWorker(this.dbHost);
 		worker1.start();
@@ -83,6 +83,11 @@ public class DataCollectionRunner {
 				continue;
 			}
 		}
+	}
+	
+	public void runDataEvaluation() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public static List<Company> getCompanies() {
@@ -157,6 +162,8 @@ public class DataCollectionRunner {
 			Instance.dbHost = json.getString("dbHost");
 			if(args.length > 0 && args[0].equalsIgnoreCase("--save-data")) {
 				Instance.runDataSaver();
+			} else if(args.length > 0 && args[0].equalsIgnoreCase("--evaluate-data")) {
+				Instance.runDataEvaluation();
 			} else {
 				Instance.runDataWorkers();
 			}

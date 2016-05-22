@@ -1,4 +1,4 @@
-package edu.csula.datascience.acquisition.driver.database.mongo;
+package edu.csula.datascience.acquisition.driver.database.mongo.ext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,9 +7,10 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 
-import edu.csula.datascience.acquisition.model.MarkitOnDemandModel;
+import edu.csula.datascience.acquisition.driver.database.mongo.BaseMongoDbDataCollector;
+import edu.csula.datascience.acquisition.model.database.MarkitOnDemandModel;
 
-public class MODDataCollector<T extends MarkitOnDemandModel,A extends T> extends BaseMongoDbDataCollector<T,A>  {
+public class MODDataCollector extends BaseMongoDbDataCollector<MarkitOnDemandModel,MarkitOnDemandModel>  {
 	public MODDataCollector(String dbHost, String dbCollection) {
 		super(dbHost,dbCollection);
 	}
@@ -18,14 +19,14 @@ public class MODDataCollector<T extends MarkitOnDemandModel,A extends T> extends
 	}
 	
 	@Override
-	public Collection<T> mungee(Collection<A> src) {
-		List<T> ret = new ArrayList<>();
+	public Collection<MarkitOnDemandModel> mungee(Collection<MarkitOnDemandModel> src) {
+		List<MarkitOnDemandModel> ret = new ArrayList<>();
 		ret.addAll(src);
 		return ret;
 	}
 
 	@Override
-	public void save(Collection<T> data) {
+	public void save(Collection<MarkitOnDemandModel> data) {
 		List<Document> documents = data.stream()
 			.map(item -> new Document()
 					.append("name", item.name)
