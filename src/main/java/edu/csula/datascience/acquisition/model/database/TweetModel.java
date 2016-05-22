@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.json.JSONObject;
 
+import com.google.api.client.util.DateTime;
+
 import edu.csula.datascience.acquisition.driver.database.BaseDatabaseModel;
 
 public class TweetModel extends BaseDatabaseModel<TweetModel>{
@@ -14,7 +16,7 @@ public class TweetModel extends BaseDatabaseModel<TweetModel>{
 	public int favorite_count;
 	
 	public void parseJSONObject(JSONObject model) {
-		this.created_at = (Date)model.get("created_at");
+		this.created_at = new Date(model.getJSONObject("created_at").getLong("$date"));;
 		this.id = model.getLong("id");
 		this.text = model.getString("text");
 		this.retweet_count = model.getInt("retweet_count");
@@ -23,7 +25,7 @@ public class TweetModel extends BaseDatabaseModel<TweetModel>{
 	
 	public TweetModel clone() {
 		TweetModel object = new TweetModel();
-		object.created_at = (Date)this.created_at.clone();
+		object.created_at = new Date((new DateTime(this.created_at)).getValue());
 		object.id = this.id;
 		object.text = this.text.toString();
 		object.retweet_count = this.retweet_count;

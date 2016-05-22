@@ -33,7 +33,7 @@ public class QuandlStockDataCollector extends BaseMongoDbDataCollector<QuandlSto
 	public void save(Collection<QuandlStockModel> data) {
 		List<Document> documents = data.stream()
 			.map(item -> new Document()
-					.append("stock", item.name)
+					.append("stock", item.stock)
 					.append("date", item.date)
 					.append("open", item.open)
 					.append("high", item.high)

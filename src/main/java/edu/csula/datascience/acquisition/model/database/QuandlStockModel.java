@@ -3,11 +3,13 @@ import java.util.Date;
 
 import org.json.JSONObject;
 
+import com.google.api.client.util.DateTime;
+
 import edu.csula.datascience.acquisition.driver.database.BaseDatabaseModel;
 import edu.csula.datascience.interfaces.PercentageDifference;
 
 public class QuandlStockModel extends BaseDatabaseModel<QuandlStockModel> implements PercentageDifference<QuandlStockModel> {
-	public String name;
+	public String stock;
 	public Date date;
 	public double open;
 	public double high;
@@ -16,8 +18,8 @@ public class QuandlStockModel extends BaseDatabaseModel<QuandlStockModel> implem
 	public double volume;
 	
 	public void parseJSONObject(JSONObject model) {
-		this.name = model.getString("name");
-		this.date = (Date)model.get("date");
+		this.stock = model.getString("stock");
+		this.date = new Date(model.getJSONObject("date").getLong("$date"));
 		this.open = model.getDouble("open");
 		this.high = model.getDouble("high");
 		this.low = model.getDouble("low");
@@ -27,8 +29,8 @@ public class QuandlStockModel extends BaseDatabaseModel<QuandlStockModel> implem
 	
 	public QuandlStockModel clone() {
 		QuandlStockModel object = new QuandlStockModel();
-		object.name = this.name.toString();
-		object.date = (Date)this.date.clone();
+		object.stock = this.stock.toString();
+		object.date = new Date((new DateTime(this.date)).getValue());
 		object.open = this.open;
 		object.high = this.high;
 		object.low = this.low;

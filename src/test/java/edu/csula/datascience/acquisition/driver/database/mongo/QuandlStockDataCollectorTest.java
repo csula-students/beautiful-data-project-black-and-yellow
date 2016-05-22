@@ -42,13 +42,13 @@ public class QuandlStockDataCollectorTest {
 		List<QuandlStockModel> list4 = new ArrayList<>();
 		for(int i = 0; i < 3; i++) {
 			QuandlStockModel model = new QuandlStockModel();
-			model.name = "item " + 1;
+			model.stock = "item " + 1;
 			list4.add(model);
 		}
 		List<QuandlStockModel> newList4 = (List<QuandlStockModel>)dbDriver.mungee(list4);	
 		Assert.assertEquals(3, newList4.size());
 		for(int i = 0; i < 3; i++) {
-			Assert.assertEquals(list4.get(i).name, newList4.get(i).name);
+			Assert.assertEquals(list4.get(i).stock, newList4.get(i).stock);
 		}
 	}
 }

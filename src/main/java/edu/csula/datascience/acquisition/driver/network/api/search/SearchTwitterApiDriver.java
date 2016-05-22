@@ -11,7 +11,6 @@ import org.json.JSONObject;
 
 import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
 import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
-import edu.csula.datascience.acquisition.model.Company;
 
 public class SearchTwitterApiDriver extends TwitterApiDriver {
 	protected int limit = 100;
@@ -31,7 +30,7 @@ public class SearchTwitterApiDriver extends TwitterApiDriver {
 	
 	@Override
 	public void queryService() {
-		if(!this.config.containsKey("access_token") || companies.size() == 0) {
+		if(!this.config.containsKey("access_token")) {
 			return;
 		}
 		
@@ -41,18 +40,7 @@ public class SearchTwitterApiDriver extends TwitterApiDriver {
 			apiCaller.setMethodGet();
 			apiCaller.setHeader("Authorization", "Bearer " + this.config.get("access_token"));
 			apiCaller.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-			
-			String q = "";
-			for(Company company : companies) {
-				q += " OR " + company.name.trim().replaceAll(" ", " OR ");
-				if(company.alias.size() > 0) {
-					for(String alias : company.alias) {
-						q += " OR " + alias.trim().replaceAll(" ", " OR ");
-					}
-				}
-			}
-			
-			q = q.substring(4);
+
 			if(this.lastId == null) {
 				apiCaller.setRequestData("q", this.query+" since:"+date.format(this.startTime) + " until:"+date.format(this.endTime));
 			} else {
@@ -83,10 +71,11 @@ public class SearchTwitterApiDriver extends TwitterApiDriver {
 						this.lastId = data.get("id");
 					}
 				} else {
+					this.count = 0;
 					System.out.println("Did not retrieved any statuses");
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				this.count = 0;
 				e.printStackTrace();
 			}
 		}		

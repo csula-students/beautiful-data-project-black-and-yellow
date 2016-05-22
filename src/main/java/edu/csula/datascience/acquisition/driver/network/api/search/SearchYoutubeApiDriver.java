@@ -44,6 +44,7 @@ public class SearchYoutubeApiDriver extends YoutubeApiDriver {
 
 		while(count == limit) {
 			try {
+				this.count = 0;
 				// Define the API request for retrieving search results.
 		        YouTube.Search.List search = youtube.search().list("id,snippet");
 
@@ -64,6 +65,7 @@ public class SearchYoutubeApiDriver extends YoutubeApiDriver {
 		        search.setOrder("date");
 		        SearchListResponse searchResponse = search.execute();
 		        List<SearchResult> searchResultList = searchResponse.getItems();
+		        
 		        if (searchResultList != null) {
 		        	Iterator<SearchResult> iter = searchResultList.iterator();
 		        	while(iter.hasNext()) {
@@ -77,6 +79,7 @@ public class SearchYoutubeApiDriver extends YoutubeApiDriver {
 		        		data.put("published_at", result.getSnippet().getPublishedAt().toStringRfc3339()); 
 		        		this.lastDateTime = result.getSnippet().getPublishedAt();
 		        		this.data.add(data);
+		        		this.count++;
 		        	}
 		        }
 			} catch (GoogleJsonResponseException e) {

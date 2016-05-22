@@ -22,17 +22,17 @@ public class CompareRowsCallable<T extends BaseDatabaseModel<T> & PercentageDiff
 	}
 
 	public void call(T row) throws Exception {
-		if(prevRow == null) {
-			prevRow = row;
-		} else {
+		if(prevRow != null) {
 			if(prevRow.difference(row) >= upperLimit) {
 				callback.call(row);
 			}
 			
 			if(prevRow.difference(row) <= lowerLimit) {
 				callback.call(row);
-			}
+			}			
 		}
+		
+		prevRow = row;
 	}
 
 }

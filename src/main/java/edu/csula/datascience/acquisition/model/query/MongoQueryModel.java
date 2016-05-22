@@ -281,7 +281,7 @@ public class MongoQueryModel extends BaseQueryModel {
 	}
 	
 	public Date getParamAsDate(String param) throws JSONException {
-		return (Date)this.getQuery().get(param);
+		return new Date(this.getQuery().getJSONObject(param).getLong("$date"));
 	}
 	
 	public void setParamEqualTo(String param, Object value) {

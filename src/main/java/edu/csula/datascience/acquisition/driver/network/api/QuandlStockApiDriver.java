@@ -104,9 +104,9 @@ public class QuandlStockApiDriver extends BaseApiDriver<QuandlStockModel>  {
 							JSONObject data = new JSONObject();
 							if(parts.length >= 13) {
 								if(line.matches("^(Date|date).*")) {
-									data.put("name", "Name");
+									data.put("stock", "Name");
 								} else {
-									data.put("name", stockName);
+									data.put("stock", stockName);
 								}
 								data.put("date",parts[0]);
 								data.put("open", parts[1]);
@@ -144,7 +144,7 @@ public class QuandlStockApiDriver extends BaseApiDriver<QuandlStockModel>  {
 			
 			try {
 				QuandlStockModel model = new QuandlStockModel();
-				model.name = row.get("name");
+				model.stock = row.get("stock");
 				model.date = this.dateParser.parse(row.get("date"));
 				model.high = Double.valueOf(row.get("high"));
 				model.low = Double.valueOf(row.get("low"));

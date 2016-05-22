@@ -3,6 +3,8 @@ package edu.csula.datascience.acquisition.model.database;
 import java.util.Date;
 
 import org.json.JSONObject;
+
+import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.SearchResult;
 
 import edu.csula.datascience.acquisition.driver.database.BaseDatabaseModel;
@@ -34,7 +36,7 @@ public class YoutubeModel extends BaseDatabaseModel<YoutubeModel> {
 		this.id = model.getString("id");
 		this.title = model.getString("title");
 		this.description = model.getString("description");
-		this.published = (Date)model.get("published");
+		this.published = new Date(model.getJSONObject("published").getLong("$date"));
 	}
 	
 	public YoutubeModel clone() {
@@ -43,7 +45,7 @@ public class YoutubeModel extends BaseDatabaseModel<YoutubeModel> {
 		object.channel_id = this.channel_id.toString();
 		object.title = this.title.toString();
 		object.description = this.description.toString();
-		object.published = (Date)this.published.clone();
+		object.published = new Date((new DateTime(this.published)).getValue());;
 		return object;
 	}
 }

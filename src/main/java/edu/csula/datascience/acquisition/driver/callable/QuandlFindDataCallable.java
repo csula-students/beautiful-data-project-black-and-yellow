@@ -8,6 +8,7 @@ import edu.csula.datascience.acquisition.driver.database.mongo.ext.YoutubeDataCo
 import edu.csula.datascience.acquisition.driver.network.api.search.SearchTwitterApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.search.SearchYoutubeApiDriver;
 import edu.csula.datascience.acquisition.model.database.QuandlStockModel;
+import edu.csula.datascience.acquisition.runner.DataCollectionRunner;
 
 public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 	protected String dbHost;
@@ -26,20 +27,28 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 		calendar.add(Calendar.DAY_OF_MONTH, 2);
 		Date endDate = calendar.getTime();
 		
-		SearchTwitterApiDriver twitterApiDriver = new SearchTwitterApiDriver(row.name,startDate,endDate);
+		System.out.println("Checking twitter for data");
+		SearchTwitterApiDriver twitterApiDriver = new SearchTwitterApiDriver(row.stock,startDate,endDate);
+		twitterApiDriver.setConfigData(DataCollectionRunner.getConfig(DataCollectionRunner.TWITTER));
 		if(twitterApiDriver.authenticate()) {
 			TweetDataCollector tweetDriver = new TweetDataCollector(this.dbHost);
 			twitterApiDriver.queryService();
 			while(twitterApiDriver.hasNext()) {
-				tweetDriver.save(tweetDriver.mungee(twitterApiDriver.next()));
+				tweetDriver.save(twitterApiDriver.next());
 			}
+		} else {
+			System.out.println("Failed to authenticate");
 		}
 		
-		SearchYoutubeApiDriver youtubeApiDriver = new SearchYoutubeApiDriver(row.name,startDate,endDate);
+		System.out.println("Checking youtube for data");
+		SearchYoutubeApiDriver youtubeApiDriver = new SearchYoutubeApiDriver(row.stock,startDate,endDate);
+		youtubeApiDriver.setConfigData(DataCollectionRunner.getConfig(DataCollectionRunner.GOOGLE));
 		YoutubeDataCollector youtubeDriver = new YoutubeDataCollector(this.dbHost);
 		youtubeApiDriver.queryService();
 		while(youtubeApiDriver.hasNext()) {
-			youtubeDriver.save(youtubeDriver.mungee(youtubeApiDriver.next()));
+			youtubeDriver.save(youtubeApiDriver.next());
 		}
+		
+		Thread.sleep(15000);
 	}
 }

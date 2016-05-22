@@ -3,6 +3,8 @@ import java.util.Date;
 
 import org.json.JSONObject;
 
+import com.google.api.client.util.DateTime;
+
 import edu.csula.datascience.acquisition.driver.database.BaseDatabaseModel;
 import edu.csula.datascience.interfaces.*;
 
@@ -13,14 +15,14 @@ public class QuandlRevenueModel extends BaseDatabaseModel<QuandlRevenueModel> im
 	
 	public void parseJSONObject(JSONObject model) {
 		this.name = model.getString("name");
-		this.date = (Date)model.get("date");
+		this.date = new Date(model.getJSONObject("date").getLong("$date"));
 		this.value = model.getDouble("value");
 	}
 	
 	public QuandlRevenueModel clone() {
 		QuandlRevenueModel object = new QuandlRevenueModel();
 		object.name = this.name.toString();
-		object.date = (Date)this.date.clone();
+		object.date = new Date((new DateTime(this.date)).getValue());
 		object.value = this.value;
 		return object;
 	}
