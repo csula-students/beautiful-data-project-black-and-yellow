@@ -11,6 +11,9 @@ import org.json.JSONObject;
 
 import com.mongodb.CursorType;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientOptions.Builder;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -29,7 +32,8 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
     
 	public BaseMongoDbDataCollector(String dbHost, String collectionName) {
 		// establish database connection to MongoDB
-        mongoClient = new MongoClient(dbHost);
+		Builder options = MongoClientOptions.builder();
+        mongoClient = new MongoClient(new ServerAddress(dbHost),options.build());
         database = mongoClient.getDatabase(dbName);
         collection = database.getCollection(collectionName);
         this.collectionName = collectionName;
@@ -77,8 +81,7 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
     
     public void fetchAll(Callable<?> callback,T model) {
     	FindIterable<Document> results = collection.find();
-    	results.cursorType(CursorType.TailableAwait);
-    	results.maxTime(Long.MAX_VALUE, TimeUnit.SECONDS);
+    	results.noCursorTimeout(true).cursorType(CursorType.TailableAwait).maxTime(Long.MAX_VALUE, TimeUnit.SECONDS);
     	MongoCursor<Document> itr = results.iterator();
     	while(itr.hasNext()) {
     		Document row = itr.next();

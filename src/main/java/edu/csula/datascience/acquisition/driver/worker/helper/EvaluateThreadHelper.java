@@ -1,27 +1,33 @@
 package edu.csula.datascience.acquisition.driver.worker.helper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.csula.datascience.acquisition.driver.database.mongo.ext.AmazonDataCollector;
 import edu.csula.datascience.acquisition.driver.database.mongo.ext.QuandlRevenueDataCollector;
 import edu.csula.datascience.acquisition.driver.database.mongo.ext.QuandlStockDataCollector;
 import edu.csula.datascience.acquisition.driver.network.api.QuandlRevenueApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.QuandlStockApiDriver;
-import edu.csula.datascience.acquisition.model.AmazonModel;
+import edu.csula.datascience.acquisition.model.database.AmazonModel;
 
 public class EvaluateThreadHelper extends Thread {
 	protected QuandlRevenueDataCollector dbRevDriver;
 	protected QuandlStockDataCollector dbSckDriver;
 	protected QuandlStockApiDriver stockInstance;
 	protected QuandlRevenueApiDriver revInstance;
+	protected AmazonDataCollector dbAmazonDriver;
 	protected AmazonModel model;
 	
-	public EvaluateThreadHelper(QuandlRevenueDataCollector dbRevDriver, QuandlStockDataCollector dbSckDriver) {
-		this(dbRevDriver, dbSckDriver, null,null,null);
+	public EvaluateThreadHelper(QuandlRevenueDataCollector dbRevDriver, QuandlStockDataCollector dbSckDriver, AmazonDataCollector dbAmazonDriver) {
+		this(dbRevDriver, dbSckDriver, dbAmazonDriver,null,null,null);
 	}
 	
-	public EvaluateThreadHelper(QuandlRevenueDataCollector dbRevDriver, QuandlStockDataCollector dbSckDriver, QuandlStockApiDriver stockInstance, QuandlRevenueApiDriver revInstance, AmazonModel model) {
+	public EvaluateThreadHelper(QuandlRevenueDataCollector dbRevDriver, QuandlStockDataCollector dbSckDriver, AmazonDataCollector dbAmazonDriver, QuandlStockApiDriver stockInstance, QuandlRevenueApiDriver revInstance, AmazonModel model) {
 		this.dbRevDriver = dbRevDriver;
 		this.dbSckDriver = dbSckDriver;
 		this.stockInstance = stockInstance;
 		this.revInstance = revInstance;
+		this.dbAmazonDriver = dbAmazonDriver;
 		this.model = model;
 	}	
 	
@@ -49,7 +55,11 @@ public class EvaluateThreadHelper extends Thread {
 		this.model = model;
 	}
 
-	public void run() {		
+	public void run() {
+		List<AmazonModel> list = new ArrayList<>();
+		list.add(model);
+		this.dbAmazonDriver.save(list);
+		
 		revInstance.queryService();
 		while(revInstance.hasNext()) {
 			dbRevDriver.save(dbRevDriver.mungee(revInstance.next()));

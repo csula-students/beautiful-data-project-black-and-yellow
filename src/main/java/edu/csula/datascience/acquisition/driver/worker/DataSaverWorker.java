@@ -7,7 +7,7 @@ import edu.csula.datascience.acquisition.driver.callable.SaveToFileCallable;
 import edu.csula.datascience.acquisition.driver.network.api.AmazonFinanceApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.QuandlRevenueApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.QuandlStockApiDriver;
-import edu.csula.datascience.acquisition.model.AmazonModel;
+import edu.csula.datascience.acquisition.model.database.AmazonModel;
 import edu.csula.datascience.acquisition.runner.DataCollectionRunner;
 
 public class DataSaverWorker extends Thread {
