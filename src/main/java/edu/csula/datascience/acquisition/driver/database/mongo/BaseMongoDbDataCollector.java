@@ -3,12 +3,10 @@ package edu.csula.datascience.acquisition.driver.database.mongo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
 import org.json.JSONObject;
 
-import com.mongodb.CursorType;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientOptions.Builder;
@@ -80,7 +78,7 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
     
     public void fetchAll(Callable<?> callback,T model) {
     	FindIterable<Document> results = collection.find();
-    	results.noCursorTimeout(true).cursorType(CursorType.TailableAwait).maxTime(Long.MAX_VALUE, TimeUnit.SECONDS);
+    	results.noCursorTimeout(true);
     	MongoCursor<Document> itr = results.iterator();
     	while(itr.hasNext()) {
     		Document row = itr.next();
@@ -90,6 +88,7 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.exit(1);
 			}
     	}
     }

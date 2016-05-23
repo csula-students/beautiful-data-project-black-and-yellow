@@ -8,6 +8,7 @@ import org.bson.Document;
 import org.json.JSONObject;
 
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
 
 import edu.csula.datascience.acquisition.driver.BaseComparableCallable;
 import edu.csula.datascience.acquisition.driver.database.mongo.BaseMongoDbDataCollector;
@@ -42,14 +43,18 @@ public class QuandlRevenueDataCollector extends BaseMongoDbDataCollector<QuandlR
 	}
 	
 	public void fetchAll(BaseComparableCallable<QuandlRevenueModel> callback,QuandlRevenueModel model) {
-    	FindIterable<Document> results = collection.find();
-    	for(Document row : results) {
+		FindIterable<Document> results = collection.find();
+    	results.noCursorTimeout(true);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		Document row = itr.next();
     		model.parseJSONObject(new JSONObject(row.toJson()));
     		try {
 				callback.call(model);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.exit(1);
 			}
     	}
     }
