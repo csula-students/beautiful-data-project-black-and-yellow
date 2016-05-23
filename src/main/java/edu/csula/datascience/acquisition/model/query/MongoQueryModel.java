@@ -231,7 +231,11 @@ public class MongoQueryModel extends BaseQueryModel {
 	}
 	
 	public JSONObject getQuery() {
-		return this.query.getJSONObject(QUERY);
+		try {
+			return this.query.getJSONObject(QUERY);
+		} catch (JSONException e) {
+			return new JSONObject();
+		}
 	}	
 	
 	public void setParamEqualTo(String param, String value) {

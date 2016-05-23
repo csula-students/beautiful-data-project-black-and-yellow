@@ -42,7 +42,7 @@ public class SearchTwitterApiDriver extends TwitterApiDriver {
 			apiCaller.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
 
 			if(this.lastId == null) {
-				apiCaller.setRequestData("q", this.query+" since:"+date.format(this.startTime) + " until:"+date.format(this.endTime));
+				apiCaller.setRequestData("q", '"'+this.query+'"'+" since:"+date.format(this.startTime) + " until:"+date.format(this.endTime));
 			} else {
 				apiCaller.setRequestData("q", this.query+" since_id:"+this.lastId + " until:"+date.format(this.endTime));
 			}

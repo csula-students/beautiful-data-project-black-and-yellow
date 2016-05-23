@@ -57,11 +57,11 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 		}
 		System.out.println("Getting Company name for " + row.stock);
 		MongoQueryModel query = new MongoQueryModel();
-		query.setParamEqualTo("stock", row.stock);
+		query.setParamEqualTo("ticker", row.stock);
 		AmazonModel model = this.dbAmazonDriver.find(query, new AmazonModel());		
 		
 		System.out.println("Checking twitter data for " +model.name);
-		SearchTwitterApiDriver twitterApiDriver = new SearchTwitterApiDriver(model.name,this.startDate,this.endDate);
+		SearchTwitterApiDriver twitterApiDriver = new SearchTwitterApiDriver(this.filterName(model.name),this.startDate,this.endDate);
 		twitterApiDriver.setConfigData(DataCollectionRunner.getConfig(DataCollectionRunner.TWITTER));
 		if(twitterApiDriver.authenticate()) {
 			TweetDataCollector tweetDriver = new TweetDataCollector(this.dbHost);
@@ -74,7 +74,7 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 		}
 		
 		System.out.println("Checking youtube data for " + model.name);
-		SearchYoutubeApiDriver youtubeApiDriver = new SearchYoutubeApiDriver(model.name,this.startDate,this.endDate);
+		SearchYoutubeApiDriver youtubeApiDriver = new SearchYoutubeApiDriver(this.filterName(model.name),this.startDate,this.endDate);
 		youtubeApiDriver.setConfigData(DataCollectionRunner.getConfig(DataCollectionRunner.GOOGLE));
 		YoutubeDataCollector youtubeDriver = new YoutubeDataCollector(this.dbHost);
 		youtubeApiDriver.queryService();
@@ -83,5 +83,9 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 		}
 		
 		Thread.sleep(15000);
+	}
+	
+	private String filterName(String name) {
+		return name.replaceAll("\\s(Inc\\.?|Corp\\.?|Company|Ltd\\.?|Co\\.?|Corporation|\\-\\sClass|[A-Z\\-\\_])\\s*$","").replaceAll("\\s*The\\s*", "");
 	}
 }

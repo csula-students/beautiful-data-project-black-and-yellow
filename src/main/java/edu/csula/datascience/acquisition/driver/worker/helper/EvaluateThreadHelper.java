@@ -57,6 +57,7 @@ public class EvaluateThreadHelper extends Thread {
 
 	public void run() {
 		List<AmazonModel> list = new ArrayList<>();
+		model.name = model.name.trim();
 		list.add(model);
 		this.dbAmazonDriver.save(list);
 		
