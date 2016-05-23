@@ -72,12 +72,6 @@ public class EvaluateThreadHelper extends Thread {
 		while(stockInstance.hasNext()) {
 			dbSckDriver.save(dbSckDriver.mungee(stockInstance.next()));
 		}
-		
-		try {
-			this.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
