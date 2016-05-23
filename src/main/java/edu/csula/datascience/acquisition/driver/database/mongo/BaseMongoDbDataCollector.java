@@ -1,7 +1,6 @@
 package edu.csula.datascience.acquisition.driver.database.mongo;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
