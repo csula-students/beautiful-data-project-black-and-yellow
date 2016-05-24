@@ -57,7 +57,7 @@ public class EvaluateDataWorker extends Thread {
 						
 						if(helper == null) {
 							try {
-								Thread.sleep(15000);
+								Thread.sleep(1);
 							} catch (InterruptedException e) {
 								//Do nothing
 							}
