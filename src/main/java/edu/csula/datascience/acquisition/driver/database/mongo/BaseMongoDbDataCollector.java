@@ -32,11 +32,11 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
 		Builder options = MongoClientOptions.builder();
         mongoClient = new MongoClient(new ServerAddress(dbHost),options.build());
         database = mongoClient.getDatabase(dbName);
-        collection = database.getCollection(collectionName);
         this.collectionName = collectionName;
 	}
     
     protected void insertMany(List<Document> documents) {
+    	MongoCollection<Document> collection = database.getCollection(collectionName);
     	if(documents.size() == 0) {
     		return;
     	}

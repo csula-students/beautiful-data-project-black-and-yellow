@@ -62,11 +62,13 @@ public class EvaluateThreadHelper extends Thread {
 		this.dbAmazonDriver.save(list);
 		
 		revInstance.queryService();
+		revInstance.setBatchSize(2000);
 		while(revInstance.hasNext()) {
 			dbRevDriver.save(dbRevDriver.mungee(revInstance.next()));
 		}
 		
 		stockInstance.queryService();
+		stockInstance.setBatchSize(2000);
 		while(stockInstance.hasNext()) {
 			dbSckDriver.save(dbSckDriver.mungee(stockInstance.next()));
 		}

@@ -20,7 +20,7 @@ public class EvaluateDataWorker extends Thread {
 	protected QuandlStockDataCollector dbSckDriver;
 	protected AmazonDataCollector dbAmazonDriver;
 	protected String dbHost;
-	protected static int limit = 20;
+	protected static int limit = 10;
 	
 	public EvaluateDataWorker(String dbHost) {
 		this.dbHost = dbHost;
@@ -57,7 +57,7 @@ public class EvaluateDataWorker extends Thread {
 						
 						if(helper == null) {
 							try {
-								Thread.sleep(10000);
+								Thread.sleep(1);
 							} catch (InterruptedException e) {
 								//Do nothing
 							}
