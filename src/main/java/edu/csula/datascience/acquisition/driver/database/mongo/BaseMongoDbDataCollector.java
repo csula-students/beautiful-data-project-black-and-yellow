@@ -36,7 +36,6 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
 	}
     
     protected void insertMany(List<Document> documents) {
-    	MongoCollection<Document> collection = database.getCollection(collectionName);
     	if(documents.size() == 0) {
     		return;
     	}

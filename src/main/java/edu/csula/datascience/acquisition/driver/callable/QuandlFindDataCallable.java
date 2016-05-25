@@ -18,6 +18,8 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 	protected Date startDate;
 	protected Date endDate;
 	protected AmazonDataCollector dbAmazonDriver;
+	protected TweetDataCollector tweetDriver;
+	protected YoutubeDataCollector youtubeDriver;
 	
 	public QuandlFindDataCallable(String dbHost) {
 		super();
@@ -25,6 +27,8 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 		this.startDate = null;
 		this.endDate = null;
 		this.dbAmazonDriver = new AmazonDataCollector(this.dbHost);
+		this.tweetDriver = new TweetDataCollector(this.dbHost);
+		this.youtubeDriver = new YoutubeDataCollector(this.dbHost);
 	}
 	
 	public void call(QuandlStockModel row) throws Exception {
@@ -64,25 +68,21 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 		SearchTwitterApiDriver twitterApiDriver = new SearchTwitterApiDriver(this.filterName(model.name),this.startDate,this.endDate);
 		twitterApiDriver.setConfigData(DataCollectionRunner.getConfig(DataCollectionRunner.TWITTER));
 		if(twitterApiDriver.authenticate()) {
-			TweetDataCollector tweetDriver = new TweetDataCollector(this.dbHost);
 			twitterApiDriver.queryService();
 			while(twitterApiDriver.hasNext()) {
 				tweetDriver.save(twitterApiDriver.next());
 			}
-			tweetDriver.close();
 		} else {
 			System.out.println("Failed to authenticate");
 		}
 		
 		System.out.println("Checking youtube data for " + model.name);
 		SearchYoutubeApiDriver youtubeApiDriver = new SearchYoutubeApiDriver(this.filterName(model.name),this.startDate,this.endDate);
-		youtubeApiDriver.setConfigData(DataCollectionRunner.getConfig(DataCollectionRunner.GOOGLE));
-		YoutubeDataCollector youtubeDriver = new YoutubeDataCollector(this.dbHost);
+		youtubeApiDriver.setConfigData(DataCollectionRunner.getConfig(DataCollectionRunner.GOOGLE));		
 		youtubeApiDriver.queryService();
 		while(youtubeApiDriver.hasNext()) {
 			youtubeDriver.save(youtubeApiDriver.next());
 		}
-		youtubeDriver.close();
 		
 		Thread.sleep(2000);
 	}
