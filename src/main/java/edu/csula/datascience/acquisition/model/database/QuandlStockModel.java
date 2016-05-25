@@ -41,15 +41,27 @@ public class QuandlStockModel extends BaseDatabaseModel<QuandlStockModel> implem
 
 	@Override
 	public int compareTo(QuandlStockModel o) {
-		double _d1 = (this.open + this.close) / 2.0;
-		double _d2 = (o.open + o.close) / 2.0;
-		return _d1 > _d2 ? 1 : (_d1 < _d2 ? -1 : 0);
+		if(this.stock.equals(o.stock)) {
+			double _d1 = (this.high + this.low) / 2.0;
+			double _d2 = (o.high + o.low) / 2.0;
+			return _d1 > _d2 ? 1 : (_d1 < _d2 ? -1 : 0);
+		}
+		return 0;
 	}
 
 	@Override
 	public double difference(QuandlStockModel o) {
-		double _d1 = (this.open + this.close) / 2.0;
-		double _d2 = (o.open + o.close) / 2.0;
-		return Math.abs(_d1 - _d2) / _d1 * 100.0;
+		if(this.stock.equals(o.stock)) {
+			double _d1 = (this.high + this.low) / 2.0;
+			double _d2 = (o.high + o.low) / 2.0;
+			return Math.abs(_d1 - _d2) / _d1 * 100.0;
+		}
+		return 0;
+	}
+	
+	@Override
+	public double difference() {
+		System.out.println(this.stock + " " + (Math.abs(this.high - this.low) / this.open * 100.0) + " on " + this.date);
+		return Math.abs(this.high - this.low) / this.open * 100.0;
 	}
 }

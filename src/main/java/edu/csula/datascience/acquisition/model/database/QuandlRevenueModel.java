@@ -36,4 +36,8 @@ public class QuandlRevenueModel extends BaseDatabaseModel<QuandlRevenueModel> im
 	public double difference(QuandlRevenueModel o) {
 		return Math.abs(this.value - o.value) / this.value * 100.0;
 	}
+	
+	public double difference() {
+		return 0.0;
+	}
 }

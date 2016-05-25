@@ -24,10 +24,12 @@ public class CompareRowsCallable<T extends BaseDatabaseModel<T> & PercentageDiff
 	public void call(T row) throws Exception {
 		if(prevRow != null) {
 			if(prevRow.difference(row) >= upperLimit) {
+				System.out.println("Hit upper boundary: " +prevRow.difference(row));
 				callback.call(row);
 			}
 			
 			if(prevRow.difference(row) <= lowerLimit) {
+				System.out.println("Hit lower boundary: " +prevRow.difference(row));
 				callback.call(row);
 			}			
 		}

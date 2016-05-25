@@ -2,7 +2,7 @@ package edu.csula.datascience.acquisition.driver.worker;
 
 import java.util.Collection;
 
-import edu.csula.datascience.acquisition.driver.callable.CompareRowsCallable;
+import edu.csula.datascience.acquisition.driver.callable.CompareColumnsCallable;
 import edu.csula.datascience.acquisition.driver.callable.QuandlFindDataCallable;
 import edu.csula.datascience.acquisition.driver.database.mongo.ext.AmazonDataCollector;
 import edu.csula.datascience.acquisition.driver.database.mongo.ext.QuandlRevenueDataCollector;
@@ -86,7 +86,7 @@ public class EvaluateDataWorker extends Thread {
 	
 	public void processDataFromQuandl() {
 		QuandlFindDataCallable _callback = new QuandlFindDataCallable(this.dbHost);
-		CompareRowsCallable<QuandlStockModel> callback = new CompareRowsCallable<>(5,0,_callback);
+		CompareColumnsCallable<QuandlStockModel> callback = new CompareColumnsCallable<>(5,-1,_callback);
 		QuandlStockModel model = new QuandlStockModel();
 		dbSckDriver.fetchAll(callback, model);
 	}

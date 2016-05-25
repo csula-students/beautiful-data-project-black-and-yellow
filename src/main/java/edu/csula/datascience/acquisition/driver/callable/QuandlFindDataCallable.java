@@ -69,6 +69,7 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 			while(twitterApiDriver.hasNext()) {
 				tweetDriver.save(twitterApiDriver.next());
 			}
+			tweetDriver.close();
 		} else {
 			System.out.println("Failed to authenticate");
 		}
@@ -81,8 +82,9 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 		while(youtubeApiDriver.hasNext()) {
 			youtubeDriver.save(youtubeApiDriver.next());
 		}
+		youtubeDriver.close();
 		
-		Thread.sleep(15000);
+		Thread.sleep(2000);
 	}
 	
 	private String filterName(String name) {
