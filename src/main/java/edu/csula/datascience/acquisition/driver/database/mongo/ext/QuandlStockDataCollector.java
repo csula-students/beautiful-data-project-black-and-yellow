@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.bson.Document;
 import org.json.JSONObject;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 
@@ -46,6 +47,42 @@ public class QuandlStockDataCollector extends BaseMongoDbDataCollector<QuandlSto
 
 		this.insertMany(documents);
 	}
+	
+	public void findAll(BasicDBObject queryModel,QuandlStockModel model, BaseComparableCallable<QuandlStockModel> callback) {
+		System.out.println("Query: " + queryModel.toString());
+    	FindIterable<Document> results = collection.find(queryModel);
+    	results.noCursorTimeout(true);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		Document row = itr.next();
+    		model.parseJSONObject(new JSONObject(row.toJson()));
+    		try {
+				callback.call(model);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(1);
+			}
+    	}
+    }
+	
+	public void findAll(BasicDBObject queryModel,BasicDBObject sortModel,QuandlStockModel model, BaseComparableCallable<QuandlStockModel> callback) {
+		System.out.println("Query: " + queryModel.toString());
+    	FindIterable<Document> results = collection.find(queryModel).sort(sortModel);
+    	results.noCursorTimeout(true);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		Document row = itr.next();
+    		model.parseJSONObject(new JSONObject(row.toJson()));
+    		try {
+				callback.call(model);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(1);
+			}
+    	}
+    }
 	
 	public void fetchAll(BaseComparableCallable<QuandlStockModel> callback,QuandlStockModel model) {
 		FindIterable<Document> results = collection.find();

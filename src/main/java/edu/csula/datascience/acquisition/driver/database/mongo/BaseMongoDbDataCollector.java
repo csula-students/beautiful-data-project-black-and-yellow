@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import org.bson.Document;
 import org.json.JSONObject;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientOptions.Builder;
@@ -18,9 +19,8 @@ import com.mongodb.client.MongoDatabase;
 
 import edu.csula.datascience.acquisition.driver.database.BaseDataCollector;
 import edu.csula.datascience.acquisition.driver.database.BaseDatabaseModel;
-import edu.csula.datascience.acquisition.model.query.MongoQueryModel;
 
-public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A extends T> extends BaseDataCollector<T,A,MongoQueryModel> {
+public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A extends T> extends BaseDataCollector<T,A,BasicDBObject> {
 	protected MongoClient mongoClient;
 	protected MongoDatabase database;
 	protected MongoCollection<Document> collection;
@@ -57,8 +57,8 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
     	collection.drop();
     }
     
-	public T find(MongoQueryModel queryModel,T model) {
-    	FindIterable<Document> results = collection.find(queryModel.toBson());
+	public T find(BasicDBObject queryModel,T model) {
+    	FindIterable<Document> results = collection.find(queryModel);
     	for(Document row : results) {
     		model.parseJSONObject(new JSONObject(row.toJson()));
     		return model;
@@ -66,9 +66,9 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
     	return null;
     }
     
-	public List<T> findAll(MongoQueryModel queryModel,T model) {
+	public List<T> findAll(BasicDBObject queryModel,T model) {
     	List<T> list = new ArrayList<T>();
-    	FindIterable<Document> results = collection.find(queryModel.toBson());
+    	FindIterable<Document> results = collection.find(queryModel);
     	for(Document row : results) {
     		model.parseJSONObject(new JSONObject(row.toJson()));
     		list.add((T)model.clone());

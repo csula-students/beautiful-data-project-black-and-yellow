@@ -19,6 +19,7 @@ import edu.csula.datascience.acquisition.model.database.TweetModel;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
@@ -44,7 +45,7 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 		this.companies.add(company);
 	}
 	
-	public boolean authenticate() {
+	public boolean authenticate() throws JSONException{
 		HTTPServiceDriver apiCaller = new HTTPServiceDriver(this.config.get("oAuth"));
 		apiCaller.setMethodPost();
 		try {

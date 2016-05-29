@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 
 import edu.csula.datascience.acquisition.Collector;
 
-public abstract class BaseDataCollector<T,A,L extends BaseQueryModel> implements Collector<T,A>{
+public abstract class BaseDataCollector<T,A,L> implements Collector<T,A>{
 	protected boolean isConnected;
 	
 	abstract public T find(L searchModel, T model);

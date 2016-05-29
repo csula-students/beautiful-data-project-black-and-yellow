@@ -1,6 +1,9 @@
 package edu.csula.datascience.acquisition.driver.worker;
 
+import java.util.Calendar;
 import java.util.Collection;
+
+import com.mongodb.BasicDBObject;
 
 import edu.csula.datascience.acquisition.driver.callable.CompareColumnsCallable;
 import edu.csula.datascience.acquisition.driver.callable.QuandlFindDataCallable;
@@ -88,7 +91,20 @@ public class EvaluateDataWorker extends Thread {
 		QuandlFindDataCallable _callback = new QuandlFindDataCallable(this.dbHost);
 		CompareColumnsCallable<QuandlStockModel> callback = new CompareColumnsCallable<>(5,-1,_callback);
 		QuandlStockModel model = new QuandlStockModel();
-		dbSckDriver.fetchAll(callback, model);
+		BasicDBObject query = new BasicDBObject();
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, 2012);
+		calendar.set(Calendar.MONTH, 01);
+		calendar.set(Calendar.DAY_OF_MONTH, 01);
+		calendar.set(Calendar.HOUR, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		
+		query.put("date", new BasicDBObject("$gte",calendar.getTime()));
+		
+		BasicDBObject sort = new BasicDBObject();
+		sort.put("date", -1);
+		dbSckDriver.findAll(query, sort, model, callback);
 	}
 	
 	public void run() {

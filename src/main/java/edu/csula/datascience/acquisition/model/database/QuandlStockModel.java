@@ -61,7 +61,6 @@ public class QuandlStockModel extends BaseDatabaseModel<QuandlStockModel> implem
 	
 	@Override
 	public double difference() {
-		System.out.println(this.stock + " " + (Math.abs(this.high - this.low) / this.open * 100.0) + " on " + this.date);
 		return Math.abs(this.high - this.low) / this.open * 100.0;
 	}
 }

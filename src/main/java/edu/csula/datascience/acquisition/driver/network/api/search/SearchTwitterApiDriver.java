@@ -70,6 +70,7 @@ public class SearchTwitterApiDriver extends TwitterApiDriver {
 						this.data.add(data);
 						this.lastId = data.get("id");
 					}
+					System.out.println("Retrieved " + this.count + " tweets");
 				} else {
 					this.count = 0;
 					System.out.println("Did not retrieved any statuses");

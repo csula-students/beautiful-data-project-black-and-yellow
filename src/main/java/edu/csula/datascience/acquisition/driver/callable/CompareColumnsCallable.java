@@ -7,6 +7,7 @@ import edu.csula.datascience.interfaces.PercentageDifference;
 public class CompareColumnsCallable<T extends BaseDatabaseModel<T> & PercentageDifference<T>> extends BaseComparableCallable<T> {
 	double upperLimit = 0;
 	double lowerLimit = 0;
+	long count = 0;
 	BaseComparableCallable<T> callback;
 	
 	public CompareColumnsCallable(double upperLimit, double lowerLimit, BaseComparableCallable<T> callback) {
@@ -21,6 +22,8 @@ public class CompareColumnsCallable<T extends BaseDatabaseModel<T> & PercentageD
 	}
 
 	public void call(T row) throws Exception {
+		count++;
+		System.out.println("Iteration " + count);
 		if(row.difference() >= upperLimit) {
 			System.out.println("Hit upper boundary: " +row.difference());
 			callback.call(row);
