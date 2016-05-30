@@ -14,6 +14,7 @@ import edu.csula.datascience.acquisition.driver.network.api.MarkitOnDemandApiDri
 import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.YoutubeApiDriver;
 import edu.csula.datascience.acquisition.driver.worker.MODApiWorker;
+import edu.csula.datascience.acquisition.driver.worker.AdditionalDataWorker;
 import edu.csula.datascience.acquisition.driver.worker.DataSaverWorker;
 import edu.csula.datascience.acquisition.driver.worker.EvaluateDataWorker;
 import edu.csula.datascience.acquisition.driver.worker.ExportDataToElasticSearch;
@@ -56,17 +57,18 @@ public class DataCollectionRunner {
 		threads.add(worker3);
 		
 		//Keep parent alive until children are finished
-		for(Thread thread : threads) {
-			if(thread.isAlive()) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				continue;
-			}
-		}
+  		for(int i = 0; i < threads.size(); i++) {
+  			if(threads.get(i).isAlive()) {
+  				try {
+  					Thread.sleep(1000);
+  				} catch (InterruptedException e) {
+  					// TODO Auto-generated catch block
+  					e.printStackTrace();
+  				}
+  				i--;
+  				continue;
+  			}
+  		}
 	}
 	
 	public void runDataSaver() {
@@ -75,17 +77,18 @@ public class DataCollectionRunner {
 		threads.add(worker4);
 		
 		//Keep parent alive until children are finished
-		for(Thread thread : threads) {
-			if(thread.isAlive()) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				continue;
-			}
-		}
+  		for(int i = 0; i < threads.size(); i++) {
+  			if(threads.get(i).isAlive()) {
+  				try {
+  					Thread.sleep(1000);
+  				} catch (InterruptedException e) {
+  					// TODO Auto-generated catch block
+  					e.printStackTrace();
+  				}
+  				i--;
+  				continue;
+  			}
+  		}
 	}
 	
 	public void runDataEvaluation() {
@@ -94,17 +97,38 @@ public class DataCollectionRunner {
 		threads.add(worker);
 		
 		//Keep parent alive until children are finished
-		for(Thread thread : threads) {
-			if(thread.isAlive()) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				continue;
-			}
-		}
+  		for(int i = 0; i < threads.size(); i++) {
+  			if(threads.get(i).isAlive()) {
+  				try {
+  					Thread.sleep(1000);
+  				} catch (InterruptedException e) {
+  					// TODO Auto-generated catch block
+  					e.printStackTrace();
+  				}
+  				i--;
+  				continue;
+  			}
+  		}
+	}
+	
+	public void runAdditionalDataEvaluation() {
+		AdditionalDataWorker worker = new AdditionalDataWorker(this.dbHost);
+		worker.start();
+		threads.add(worker);
+		
+		//Keep parent alive until children are finished
+  		for(int i = 0; i < threads.size(); i++) {
+  			if(threads.get(i).isAlive()) {
+  				try {
+  					Thread.sleep(1000);
+  				} catch (InterruptedException e) {
+  					// TODO Auto-generated catch block
+  					e.printStackTrace();
+  				}
+  				i--;
+  				continue;
+  			}
+  		}
 	}
 	
 	public void runExportToElasticSearch() {
@@ -209,6 +233,10 @@ public class DataCollectionRunner {
 					
 					if(arg.equalsIgnoreCase("--export-to-es")) {
 						Instance.runExportToElasticSearch();
+					}
+					
+					if(arg.equalsIgnoreCase("--additional-data")) {
+						Instance.runAdditionalDataEvaluation();
 					}
 				}
 			} else {

@@ -54,4 +54,23 @@ public class MarkitOnDemandModel extends BaseDatabaseModel<MarkitOnDemandModel> 
 		object.open = this.open;		
 		return object;
 	}
+
+	@Override
+	public JSONObject toJSONObject() {
+		JSONObject json = new JSONObject();
+		json.put("name", name);
+		json.put("symbol", symbol);
+		json.put("last_price", last_price);
+		json.put("change", change);
+		json.put("change_percent", change_percent);
+		json.put("timestamp", timestamp);
+		json.put("ms_date", ms_date);
+		json.put("market_cap", market_cap);
+		json.put("volume", volume);
+		json.put("change_ytd",change_ytd);
+		json.put("high", high);
+		json.put("low", low);
+		json.put("open",open);
+		return json;
+	}
 }

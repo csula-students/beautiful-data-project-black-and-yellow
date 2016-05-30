@@ -1,5 +1,6 @@
 package edu.csula.datascience.acquisition.model.database;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONObject;
@@ -31,6 +32,18 @@ public class TweetModel extends BaseDatabaseModel<TweetModel>{
 		object.retweet_count = this.retweet_count;
 		object.favorite_count = this.favorite_count;
 		return object;
+	}
+	
+	public JSONObject toJSONObject() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(created_at);
+		JSONObject json = new JSONObject();
+		json.put("id", id);
+		json.put("date", calendar.getTimeInMillis());
+		json.put("text", text);
+		json.put("retweet_count", retweet_count);
+		json.put("favorite_count", favorite_count);
+		return json;
 	}
 	
 }

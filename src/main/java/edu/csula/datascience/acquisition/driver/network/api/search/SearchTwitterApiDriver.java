@@ -34,7 +34,9 @@ public class SearchTwitterApiDriver extends TwitterApiDriver {
 			return;
 		}
 		
-		while(count == limit) {
+		while(count == limit && this.data.size() < 1000) {
+			count = 0;
+			System.out.println("Data Size: " + this.data.size());
 			SimpleDateFormat date = new SimpleDateFormat("YYYY-MM-dd");
 			HTTPServiceDriver apiCaller = new HTTPServiceDriver(this.config.get("service")+this.config.get("type"));
 			apiCaller.setMethodGet();
@@ -42,14 +44,33 @@ public class SearchTwitterApiDriver extends TwitterApiDriver {
 			apiCaller.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
 
 			if(this.lastId == null) {
-				apiCaller.setRequestData("q", '"'+this.query+'"'+" since:"+date.format(this.startTime) + " until:"+date.format(this.endTime));
+				apiCaller.setRequestData("q", this.query);
 			} else {
-				apiCaller.setRequestData("q", this.query+" since_id:"+this.lastId + " until:"+date.format(this.endTime));
+				apiCaller.setRequestData("q", this.query);
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
+			if(this.lastId == null) {
+				apiCaller.setRequestData("since",date.format(this.startTime));
+				apiCaller.setRequestData("until",date.format(this.endTime));
+			} else {
+				apiCaller.setRequestData("max_id",this.lastId);
+				apiCaller.setRequestData("since",date.format(this.startTime));
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			apiCaller.setRequestData("lang", "en");
 			apiCaller.setRequestData("count", limit+"");
-			apiCaller.setRequestData("result_type", "recent");
+			//apiCaller.setRequestData("result_type", "recent");
 			try {
 				apiCaller.connect();
 				String response = apiCaller.getContent();
@@ -72,11 +93,17 @@ public class SearchTwitterApiDriver extends TwitterApiDriver {
 					}
 					System.out.println("Retrieved " + this.count + " tweets");
 				} else {
-					this.count = 0;
+					System.out.println(json.toString());
 					System.out.println("Did not retrieved any statuses");
+					count = limit;
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			} catch (IOException e) {
-				this.count = 0;
 				e.printStackTrace();
 			}
 		}		

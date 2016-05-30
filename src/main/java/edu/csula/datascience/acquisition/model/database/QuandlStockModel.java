@@ -1,4 +1,5 @@
 package edu.csula.datascience.acquisition.model.database;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONObject;
@@ -37,6 +38,20 @@ public class QuandlStockModel extends BaseDatabaseModel<QuandlStockModel> implem
 		object.close = this.close;
 		object.volume = this.volume;
 		return object;
+	}
+	
+	public JSONObject toJSONObject() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		JSONObject json = new JSONObject();
+		json.put("stock", stock);
+		json.put("date", calendar.getTimeInMillis());
+		json.put("open", open);
+		json.put("high", high);
+		json.put("low", low);
+		json.put("close", close);
+		json.put("volume", volume);
+		return json;
 	}
 
 	@Override

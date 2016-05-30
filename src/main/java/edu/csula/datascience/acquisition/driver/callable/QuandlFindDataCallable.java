@@ -50,7 +50,7 @@ public class QuandlFindDataCallable extends FindDataCallable<QuandlStockModel> {
 		AmazonModel model = this.dbAmazonDriver.find(query, new AmazonModel());		
 		
 		System.out.println("Checking twitter data for " +model.name);
-		SearchTwitterApiDriver twitterApiDriver = new SearchTwitterApiDriver(this.filterName(model.name),this.startDate,this.endDate);
+		SearchTwitterApiDriver twitterApiDriver = new SearchTwitterApiDriver("'"+this.filterName(model.name)+"'",this.startDate,this.endDate);
 		twitterApiDriver.setConfigData(DataCollectionRunner.getConfig(DataCollectionRunner.TWITTER));
 		do {
 			try {

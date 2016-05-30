@@ -92,15 +92,23 @@ public class EvaluateDataWorker extends Thread {
 		CompareColumnsCallable<QuandlStockModel> callback = new CompareColumnsCallable<>(5,-1,_callback);
 		QuandlStockModel model = new QuandlStockModel();
 		BasicDBObject query = new BasicDBObject();
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.YEAR, 2012);
-		calendar.set(Calendar.MONTH, 01);
-		calendar.set(Calendar.DAY_OF_MONTH, 01);
-		calendar.set(Calendar.HOUR, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
+		Calendar start = Calendar.getInstance();
+		start.set(Calendar.YEAR, 2012);
+		start.set(Calendar.MONTH, 0);
+		start.set(Calendar.DAY_OF_MONTH, 01);
+		start.set(Calendar.HOUR, 0);
+		start.set(Calendar.MINUTE, 0);
+		start.set(Calendar.SECOND, 0);
 		
-		query.put("date", new BasicDBObject("$gte",calendar.getTime()));
+		Calendar end = Calendar.getInstance();
+		end.set(Calendar.YEAR, 2015);
+		end.set(Calendar.MONTH, 9);
+		end.set(Calendar.DAY_OF_MONTH, 7);
+		end.set(Calendar.HOUR, 0);
+		end.set(Calendar.MINUTE, 0);
+		end.set(Calendar.SECOND, 0);
+		
+		query.put("date", new BasicDBObject("$gte",start.getTime()).append("$lte", end.getTime()));
 		
 		BasicDBObject sort = new BasicDBObject();
 		sort.put("date", -1);

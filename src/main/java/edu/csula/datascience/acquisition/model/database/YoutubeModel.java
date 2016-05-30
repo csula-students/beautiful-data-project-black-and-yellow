@@ -1,5 +1,6 @@
 package edu.csula.datascience.acquisition.model.database;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONObject;
@@ -37,6 +38,17 @@ public class YoutubeModel extends BaseDatabaseModel<YoutubeModel> {
 		this.title = model.getString("title");
 		this.description = model.getString("description");
 		this.published = new Date(model.getJSONObject("published").getLong("$date"));
+	}
+	
+	public JSONObject toJSONObject() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(published);
+		JSONObject json = new JSONObject();
+		json.put("id", id);
+		json.put("title", title);
+		json.put("description", description);
+		json.put("published", published);
+		return json;
 	}
 	
 	public YoutubeModel clone() {

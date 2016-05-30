@@ -1,4 +1,5 @@
 package edu.csula.datascience.acquisition.model.database;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.json.JSONObject;
@@ -17,6 +18,17 @@ public class QuandlRevenueModel extends BaseDatabaseModel<QuandlRevenueModel> im
 		this.name = model.getString("name");
 		this.date = new Date(model.getJSONObject("date").getLong("$date"));
 		this.value = model.getDouble("value");
+	}
+	
+	@Override
+	public JSONObject toJSONObject() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		JSONObject json = new JSONObject();
+		json.put("name", name);
+		json.put("date", calendar.getTimeInMillis());
+		json.put("value", value);
+		return json;
 	}
 	
 	public QuandlRevenueModel clone() {
@@ -39,5 +51,5 @@ public class QuandlRevenueModel extends BaseDatabaseModel<QuandlRevenueModel> im
 	
 	public double difference() {
 		return 0.0;
-	}
+	}	
 }

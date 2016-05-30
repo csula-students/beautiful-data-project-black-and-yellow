@@ -17,6 +17,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
+import edu.csula.datascience.acquisition.driver.BaseCallable;
 import edu.csula.datascience.acquisition.driver.database.BaseDataCollector;
 import edu.csula.datascience.acquisition.driver.database.BaseDatabaseModel;
 
@@ -69,6 +70,7 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
 	public List<T> findAll(BasicDBObject queryModel,T model) {
     	List<T> list = new ArrayList<T>();
     	FindIterable<Document> results = collection.find(queryModel);
+    	results.noCursorTimeout(true);
     	for(Document row : results) {
     		model.parseJSONObject(new JSONObject(row.toJson()));
     		list.add((T)model.clone());
@@ -90,6 +92,54 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
 				e.printStackTrace();
 				System.exit(1);
 			}
+    	}
+    }
+    
+    public void findAllBaseCallable(BasicDBObject queryModel,BasicDBObject sortModel, BaseCallable callback) {
+		System.out.println("Query: " + queryModel.toString());
+    	FindIterable<Document> results = collection.find(queryModel).sort(sortModel);
+    	results.noCursorTimeout(true);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		callback.call(new JSONObject(itr.next().toJson()));
+    	}
+    }
+	
+	public void findAllBaseCallable(BasicDBObject queryModel, BaseCallable callback) {
+		System.out.println("Query: " + queryModel.toString());
+    	FindIterable<Document> results = collection.find(queryModel);
+    	results.noCursorTimeout(true);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		callback.call(new JSONObject(itr.next().toJson()));
+    	}
+    }
+	
+	public void findAllSortedBaseCallable(BasicDBObject sortedModel, BaseCallable callback) {
+    	FindIterable<Document> results = collection.find().sort(sortedModel);
+    	results.noCursorTimeout(true);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		callback.call(new JSONObject(itr.next().toJson()));
+    	}
+    }
+	
+	public void findAllBaseCallable(BaseCallable callback, T model) {
+    	FindIterable<Document> results = collection.find();
+    	results.noCursorTimeout(true);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		model.parseJSONObject(new JSONObject(itr.next().toJson()));
+    		callback.call(model.toJSONObject());
+    	}
+    }
+	
+	public void findAllBaseCallable(BaseCallable callback) {
+    	FindIterable<Document> results = collection.find();
+    	results.noCursorTimeout(true);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		callback.call(new JSONObject(itr.next().toJson()));
     	}
     }
 }

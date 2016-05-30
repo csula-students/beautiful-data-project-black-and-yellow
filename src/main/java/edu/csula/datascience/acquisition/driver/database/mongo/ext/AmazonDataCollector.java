@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bson.Document;
-
 import edu.csula.datascience.acquisition.driver.database.mongo.BaseMongoDbDataCollector;
 import edu.csula.datascience.acquisition.model.database.AmazonModel;
 
@@ -40,5 +39,4 @@ public class AmazonDataCollector extends BaseMongoDbDataCollector<AmazonModel,Am
 
 			this.insertMany(documents);
 	}
-
 }

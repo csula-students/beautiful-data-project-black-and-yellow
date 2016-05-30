@@ -1,21 +1,25 @@
 package edu.csula.datascience.acquisition.driver.callable;
 
-import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.index.IndexRequest;
+import java.io.IOException;
+import java.util.HashMap;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import edu.csula.datascience.acquisition.driver.BaseCallable;
+import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
 
-public class SaveToElasticSearchCallable extends BaseCallable {
-	protected BulkProcessor bulkProcessor;
+public class SaveToElasticSearchCallable extends BaseCallable {	
+	protected String address;
 	protected String indexName;
 	protected String typeName;
+	protected HashMap<String,Integer> counter;
 	
-	public SaveToElasticSearchCallable(BulkProcessor bulkProcessor, String indexName, String typeName) {
-		this.bulkProcessor = bulkProcessor;
+	public SaveToElasticSearchCallable(String address, String indexName, String typeName) {
+		this.address = address;
 		this.indexName = indexName;
 		this.typeName = typeName;
+		counter = new HashMap<>();
 	}	
 
 	@Override
@@ -27,9 +31,44 @@ public class SaveToElasticSearchCallable extends BaseCallable {
 	@Override
 	public Boolean call(JSONObject data) {
 		// TODO Auto-generated method stub
-		bulkProcessor.add(new IndexRequest(indexName, typeName)
-			.source(data)
-		);
+		if(!counter.containsKey(this.indexName+"/"+this.typeName)) {
+			counter.put(this.indexName+"/"+this.typeName, 0);
+		}
+		
+		if(data.has("_id")) {
+			data.remove("_id");
+		}
+		if(data.has("id")) {
+			data.remove("id");
+		}
+		HTTPServiceDriver networkDriver = new HTTPServiceDriver(this.address+"/"+this.indexName+"/"+this.typeName+"/"+counter.get(this.indexName+"/"+this.typeName));
+		networkDriver.setMethodPut();
+		try {
+			networkDriver.connect(data.toString());
+			System.out.println(networkDriver.getContent());
+			counter.put(this.indexName+"/"+this.typeName, counter.get(this.indexName+"/"+this.typeName) + 1);
+		} catch (org.apache.http.conn.ConnectTimeoutException e) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return call(data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public Boolean call(JSONArray list) {
+		for(int i = 0 ;i < list.length(); i++) {
+			this.call(list.getJSONObject(i));
+		}
 		return true;
 	}
 
@@ -48,15 +87,4 @@ public class SaveToElasticSearchCallable extends BaseCallable {
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
 	}
-
-	@Override
-	public Boolean call(JSONArray list) {
-		for(int i = 0 ;i < list.length(); i++) {
-			bulkProcessor.add(new IndexRequest(indexName, typeName)
-				.source(list.getJSONObject(i))
-			);
-		}
-		return true;
-	}
-
 }

@@ -23,4 +23,12 @@ public class AmazonModel extends BaseDatabaseModel<AmazonModel> {
 		object.name = this.name.toString();
 		return object;
 	}
+	@Override
+	public JSONObject toJSONObject() {
+		JSONObject json = new JSONObject();
+		json.put("ticker", ticker);
+		json.put("code", code);
+		json.put("name", name);
+		return json;
+	}
 }
