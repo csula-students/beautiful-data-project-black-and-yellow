@@ -116,10 +116,10 @@ public class EvaluateDataWorker extends Thread {
 	}
 	
 	public void run() {
-		//System.out.println("Grabbing data from Amazon and Quandl");
-		//this.grabDataFromAmazonAndQuandl();
+		System.out.println("Grabbing data from Amazon and Quandl");
+		this.grabDataFromAmazonAndQuandl();
 		
-		System.out.println("Process data from Quandl");		
-		this.processDataFromQuandl();
+//		System.out.println("Process data from Quandl");		
+//		this.processDataFromQuandl();
 	}
 }

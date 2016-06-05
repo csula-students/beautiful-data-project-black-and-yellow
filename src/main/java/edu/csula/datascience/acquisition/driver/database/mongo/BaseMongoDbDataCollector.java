@@ -64,7 +64,18 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
     		model.parseJSONObject(new JSONObject(row.toJson()));
     		return model;
     	}
-    	return null;
+    	return model;
+    }
+	
+	public List<T> findAll(T model) {
+    	List<T> list = new ArrayList<T>();
+    	FindIterable<Document> results = collection.find();
+    	results.noCursorTimeout(true);
+    	for(Document row : results) {
+    		model.parseJSONObject(new JSONObject(row.toJson()));
+    		list.add((T)model.clone());
+    	}
+    	return list;
     }
     
 	public List<T> findAll(BasicDBObject queryModel,T model) {
@@ -75,7 +86,7 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
     		model.parseJSONObject(new JSONObject(row.toJson()));
     		list.add((T)model.clone());
     	}
-    	return null;
+    	return list;
     }
     
     public void fetchAll(Callable<?> callback,T model) {
@@ -121,6 +132,16 @@ public abstract class BaseMongoDbDataCollector<T extends BaseDatabaseModel<T> ,A
     	MongoCursor<Document> itr = results.iterator();
     	while(itr.hasNext()) {
     		callback.call(new JSONObject(itr.next().toJson()));
+    	}
+    }
+	
+	public void findAllBaseCallable(BaseCallable callback, T model,int skip, int limit) {
+    	FindIterable<Document> results = collection.find().skip(skip).limit(limit);
+    	results.noCursorTimeout(true);
+    	MongoCursor<Document> itr = results.iterator();
+    	while(itr.hasNext()) {
+    		model.parseJSONObject(new JSONObject(itr.next().toJson()));
+    		callback.call(model.toJSONObject());
     	}
     }
 	

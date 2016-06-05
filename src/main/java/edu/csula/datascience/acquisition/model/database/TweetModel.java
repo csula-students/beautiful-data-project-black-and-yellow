@@ -18,7 +18,7 @@ public class TweetModel extends BaseDatabaseModel<TweetModel>{
 	
 	public void parseJSONObject(JSONObject model) {
 		this.created_at = new Date(model.getJSONObject("created_at").getLong("$date"));;
-		this.id = model.getLong("id");
+		this.id = model.getJSONObject("id").getLong("$numberLong");
 		this.text = model.getString("text");
 		this.retweet_count = model.getInt("retweet_count");
 		this.favorite_count = model.getInt("favorite_count");		
@@ -39,7 +39,7 @@ public class TweetModel extends BaseDatabaseModel<TweetModel>{
 		calendar.setTime(created_at);
 		JSONObject json = new JSONObject();
 		json.put("id", id);
-		json.put("date", calendar.getTimeInMillis());
+		json.put("date", calendar.getTimeInMillis()/1000);
 		json.put("text", text);
 		json.put("retweet_count", retweet_count);
 		json.put("favorite_count", favorite_count);

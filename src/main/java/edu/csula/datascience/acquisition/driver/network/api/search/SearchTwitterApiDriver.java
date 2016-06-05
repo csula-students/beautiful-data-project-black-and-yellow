@@ -34,7 +34,7 @@ public class SearchTwitterApiDriver extends TwitterApiDriver {
 			return;
 		}
 		
-		while(count == limit && this.data.size() < 1000) {
+		while(count == limit && this.data.size() < 5000) {
 			count = 0;
 			System.out.println("Data Size: " + this.data.size());
 			SimpleDateFormat date = new SimpleDateFormat("YYYY-MM-dd");

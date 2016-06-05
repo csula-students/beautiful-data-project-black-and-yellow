@@ -10,6 +10,8 @@ public class DataSaverThreadHelper<T extends BaseDatabaseModel<T> ,A extends T> 
 	String address;
 	String name;
 	String type;
+	int limit;
+	int offset;
 	
 	public DataSaverThreadHelper(BaseMongoDbDataCollector<T,A> driver, A model, String address, String name, String type) {
 		this.databasedriver = driver;
@@ -17,11 +19,27 @@ public class DataSaverThreadHelper<T extends BaseDatabaseModel<T> ,A extends T> 
 		this.name = name;
 		this.type = type;
 		this.model = model;
+		this.limit = this.offset = 0;
+	}
+	
+	public DataSaverThreadHelper(BaseMongoDbDataCollector<T,A> driver, A model, String address, String name, String type,int offset, int limit) {
+		this.databasedriver = driver;
+		this.address = address;
+		this.name = name;
+		this.type = type;
+		this.model = model;
+		this.limit = limit;
+		this.offset = offset;
 	}
 	
 	public void run() {
-		SaveToElasticSearchCallable callable = new SaveToElasticSearchCallable(this.address,this.name,this.type);
-        this.databasedriver.findAllBaseCallable(callable,this.model);
+		SaveToElasticSearchCallable callable = new SaveToElasticSearchCallable(this.address,this.name,this.type,this.offset);
+		if(this.limit == 0 && this.offset ==0) {
+			this.databasedriver.findAllBaseCallable(callable,this.model);
+		} else {
+			this.databasedriver.findAllBaseCallable(callable,this.model,this.offset,this.limit);
+		}
+        
 	}
 
 }

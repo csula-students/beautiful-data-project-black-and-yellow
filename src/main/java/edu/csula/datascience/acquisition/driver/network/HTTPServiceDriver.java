@@ -47,8 +47,12 @@ public class HTTPServiceDriver extends BaseNetworkDriver{
 				query = query.substring(1);
 			}
 			
-			System.out.println("URL - "+this.method+": " + this.url+"?"+query);
-			HttpGet connection = new HttpGet(this.url+"?"+query);
+			if(!this.url.contains("?")) {
+				this.url+="?";
+			}
+			
+			System.out.println("URL - "+this.method+": " + this.url+query);
+			HttpGet connection = new HttpGet(this.url+query);
 			for(String key : this.requestHeaderData.keySet()) {
 				connection.addHeader(key, this.requestHeaderData.get(key));
 			}

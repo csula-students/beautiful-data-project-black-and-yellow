@@ -15,6 +15,7 @@ import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.YoutubeApiDriver;
 import edu.csula.datascience.acquisition.driver.worker.MODApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.AdditionalDataWorker;
+import edu.csula.datascience.acquisition.driver.worker.AdditionalDataWorker2;
 import edu.csula.datascience.acquisition.driver.worker.DataSaverWorker;
 import edu.csula.datascience.acquisition.driver.worker.EvaluateDataWorker;
 import edu.csula.datascience.acquisition.driver.worker.ExportDataToElasticSearch;
@@ -231,12 +232,12 @@ public class DataCollectionRunner {
 						Instance.runDataEvaluation();
 					}
 					
-					if(arg.equalsIgnoreCase("--export-to-es")) {
-						Instance.runExportToElasticSearch();
-					}
-					
 					if(arg.equalsIgnoreCase("--additional-data")) {
 						Instance.runAdditionalDataEvaluation();
+					}
+					
+					if(arg.equalsIgnoreCase("--export-to-es")) {
+						Instance.runExportToElasticSearch();
 					}
 				}
 			} else {

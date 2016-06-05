@@ -46,46 +46,51 @@ public class SearchYoutubeApiDriver extends YoutubeApiDriver {
 		try {
 			// Define the API request for retrieving search results.
 			YouTube.Search.List search = youtube.search().list("id,snippet");
-			this.count = 0;
 			
-			if(this.pageToken == null) {
+			do {
+				this.count = 0;
+				
 				search.setKey(this.config.get("key"));
-				search.setQ(this.query);
-				search.setFields("items(id/channelId,id/videoId,snippet/title,snippet/description,snippet/publishedAt)");
-				search.setType("video");
-				search.setMaxResults(this.limit);
-				search.setPublishedAfter(startDateTime);
-				search.setPublishedBefore(endDateTime);
-				search.setOrder("date");
-			} else {
-				search.setPageToken(this.pageToken);
-				this.failSafe = true;
-			}
-			
-			SearchListResponse searchResponse = search.execute();
-			this.pageToken = searchResponse.getNextPageToken();
-			List<SearchResult> searchResultList = searchResponse.getItems();
-
-			if (searchResultList != null) {
-				Iterator<SearchResult> iter = searchResultList.iterator();
-				while(iter.hasNext()) {
-					SearchResult result = iter.next();
-					HashMap<String,String> data = new HashMap<>();
-
-					data.put("channel_id", result.getId().getChannelId());
-					data.put("video_id", result.getId().getVideoId());
-					data.put("title", result.getSnippet().getTitle());
-					data.put("description", result.getSnippet().getDescription());
-					data.put("published_at", result.getSnippet().getPublishedAt().toStringRfc3339()); 
-					this.data.add(data);
-					this.count++;
+				if(this.pageToken != null) {
+					search.setPageToken(this.pageToken);
+					this.failSafe = true;
+				} else {
+					search.setQ(this.query);
+					//search.setFields("items(id/videoId,snippet/title,snippet/description,snippet/publishedAt)");
+					search.setType("video");
+					search.setMaxResults(this.limit);
+					search.setPublishedAfter(startDateTime);
+					search.setPublishedBefore(endDateTime);
+					search.setRelevanceLanguage("en");
+					search.setOrder("rating");
 				}
-			}
-			if(searchResponse.getPageInfo() != null) {
-				System.out.println("Retrieved " + count + " videos from youtube out of" + searchResponse.getPageInfo().getTotalResults() );
-			} else {
-				System.out.println("Retrieved " + count + " videos from youtube");
-			}
+				
+				
+				SearchListResponse searchResponse = search.execute();
+				this.pageToken = searchResponse.getNextPageToken();
+				List<SearchResult> searchResultList = searchResponse.getItems();
+	
+				if (searchResultList != null) {
+					Iterator<SearchResult> iter = searchResultList.iterator();
+					while(iter.hasNext()) {
+						SearchResult result = iter.next();
+						HashMap<String,String> data = new HashMap<>();
+	
+						data.put("channel_id", result.getId().getChannelId());
+						data.put("video_id", result.getId().getVideoId());
+						data.put("title", result.getSnippet().getTitle());
+						data.put("description", result.getSnippet().getDescription());
+						data.put("published_at", result.getSnippet().getPublishedAt().toStringRfc3339());
+						this.data.add(data);
+						this.count++;
+					}
+				}
+				if(searchResponse.getPageInfo() != null) {
+					System.out.println("Retrieved " + count + " videos from youtube out of " + searchResponse.getPageInfo().getTotalResults() );
+				} else {
+					System.out.println("Retrieved " + count + " videos from youtube");
+				}
+			} while(this.pageToken != null && this.data.size() < 50000);
 		} catch (GoogleJsonResponseException e) {
 			System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
 					+ e.getDetails().getMessage());

@@ -13,14 +13,24 @@ public class SaveToElasticSearchCallable extends BaseCallable {
 	protected String address;
 	protected String indexName;
 	protected String typeName;
+	protected int startCounter;
 	protected HashMap<String,Integer> counter;
 	
 	public SaveToElasticSearchCallable(String address, String indexName, String typeName) {
 		this.address = address;
 		this.indexName = indexName;
 		this.typeName = typeName;
+		this.startCounter = 0;
 		counter = new HashMap<>();
-	}	
+	}
+	
+	public SaveToElasticSearchCallable(String address, String indexName, String typeName, int startCounter) {
+		this.address = address;
+		this.indexName = indexName;
+		this.typeName = typeName;
+		this.startCounter = startCounter;
+		counter = new HashMap<>();
+	}
 
 	@Override
 	public Boolean call() throws Exception {
@@ -32,7 +42,7 @@ public class SaveToElasticSearchCallable extends BaseCallable {
 	public Boolean call(JSONObject data) {
 		// TODO Auto-generated method stub
 		if(!counter.containsKey(this.indexName+"/"+this.typeName)) {
-			counter.put(this.indexName+"/"+this.typeName, 0);
+			counter.put(this.indexName+"/"+this.typeName, this.startCounter);
 		}
 		
 		if(data.has("_id")) {
@@ -55,10 +65,17 @@ public class SaveToElasticSearchCallable extends BaseCallable {
 				e1.printStackTrace();
 			}
 			return call(data);
+		} catch (java.net.SocketException e) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			return call(data);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.exit(1);
 		}
 		
 		return true;
