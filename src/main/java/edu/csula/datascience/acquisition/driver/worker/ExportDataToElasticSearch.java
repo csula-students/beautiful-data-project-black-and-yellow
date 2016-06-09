@@ -1,11 +1,17 @@
 package edu.csula.datascience.acquisition.driver.worker;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.elasticsearch.node.Node;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mongodb.BasicDBObject;
@@ -38,13 +44,14 @@ public class ExportDataToElasticSearch extends Thread {
 		//Connect to database
 		List<Thread> threads = new ArrayList<>();
 		
-		int count = 10789;
+		int end = 5043846;
+		int start = 4500000;
 		int numOfThreads = 10;
-		int limit = count / numOfThreads;
+		int limit = (end-start) / numOfThreads;
 		for(int i = 0; i < numOfThreads; i++) {
 			System.out.println("Exporting Youtube Data");
-	        QuandlStockDataCollector dbYoutubeDbDriver = new QuandlStockDataCollector(this.dbHost);
-	        DataSaverThreadHelper<QuandlStockModel,QuandlStockModel> thread2 = new DataSaverThreadHelper<>(dbYoutubeDbDriver,new QuandlStockModel(), this.address,this.name,"tweets",limit *i,limit);
+	        TweetDataCollector dbYoutubeDbDriver = new TweetDataCollector(this.dbHost);
+	        DataSaverThreadHelper<TweetModel,TweetModel> thread2 = new DataSaverThreadHelper<>(dbYoutubeDbDriver,new TweetModel(), this.address,this.name,"tweets",start + limit *i,limit);
 	        thread2.start();
 	        threads.add(thread2);
 		}
@@ -69,7 +76,7 @@ public class ExportDataToElasticSearch extends Thread {
 		BasicDBObject query = new BasicDBObject();
 		Calendar start = Calendar.getInstance();
 		start.set(Calendar.YEAR, 2016);
-		start.set(Calendar.MONTH, 4);
+		start.set(Calendar.MONTH, 3);
 		start.set(Calendar.DAY_OF_MONTH, 01);
 		start.set(Calendar.HOUR, 0);
 		start.set(Calendar.MINUTE, 0);
@@ -94,7 +101,39 @@ public class ExportDataToElasticSearch extends Thread {
 		}
 	}
 	
+	public void _run3() {
+		long count = 1;
+		BufferedReader reader;
+		SimpleDateFormat dateParser = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+		try {
+			reader = new BufferedReader(new FileReader("/var/projects/temp-CS454/python twitter scaper/tweets.json"));
+			String line = null;
+			while((line = reader.readLine()) != null) {
+				HTTPServiceDriver curl = new HTTPServiceDriver("http://superlunchvote.com:9200/datascience/tweets-3.0/"+count);
+				curl.setMethodPut();
+				JSONObject document = new JSONObject(line);
+				document.remove("_id");
+				document.remove("id");
+				document.put("date", dateParser.parse(document.getString("created_at")).getTime() / 1000 );
+				document.remove("created_at");
+				curl.connect(document.toString());
+				System.out.println(curl.getContent());
+				count++;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public void run() {
-		this._run2();
+		this._run3();
 	}
 }

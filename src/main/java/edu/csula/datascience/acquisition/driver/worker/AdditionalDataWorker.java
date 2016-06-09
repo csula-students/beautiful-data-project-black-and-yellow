@@ -29,7 +29,8 @@ public class AdditionalDataWorker extends Thread {
 	public void run() {
 		int pointer = 0;
 		System.out.print("Grabbing supplemental data from ");
-		String keyTerms = "\"facebook\"OR\"cumulus\"OR\"erickson\"OR\"aaon\"OR\"msci\"OR\"apple\"OR\"sierra\"OR\"cambium\"OR\"microsoft\"OR\"android\"OR\"twitter\"OR\"youtube\"OR\"google\"OR\"technology\"OR\"stock market\"";
+		//String keyTerms = "\"facebook\"OR\"cumulus\"OR\"erickson\"OR\"aaon\"OR\"msci\"OR\"apple\"OR\"sierra\"OR\"cambium\"OR\"microsoft\"OR\"android\"OR\"twitter\"OR\"youtube\"OR\"google\"OR\"technology\"OR\"stock market\"";
+		String keyTerms = "\"aveo\"OR\"zumiez\"OR\"zynga\"OR\"aegerion\"OR\"agenus\"OR\"amyris\"OR\"alphatec\"OR\"celldex\"";
 		
 		List<HashMap<String,String>> configs = new ArrayList<HashMap<String,String>>();
 		
@@ -110,6 +111,7 @@ public class AdditionalDataWorker extends Thread {
 		//Twitter
 		SearchTwitterPopularityApiDriver apiDriver = new SearchTwitterPopularityApiDriver(keyTerms,start.getTime(),end.getTime());
 		boolean hasResults = false;
+		//nextResultSet.add("?max_id=739828730290278401&q=%22facebook%22OR%22cumulus%22OR%22erickson%22OR%22aaon%22OR%22msci%22OR%22apple%22OR%22sierra%22OR%22cambium%22OR%22microsoft%22OR%22android%22OR%22twitter%22OR%22youtube%22OR%22google%22OR%22technology%22OR%22stock%20market%22&lang=en&count=100&include_entities=1");
 		do {			
 			apiDriver.setConfigData(configs.get(pointer));
 			pointer = (pointer+1) %configs.size();
