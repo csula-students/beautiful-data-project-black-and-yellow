@@ -2,6 +2,7 @@ plugins {
   id "java"
   id "net.saliman.cobertura" version "2.3.1"
   id "com.github.kt3k.coveralls" version "2.6.3"
+  id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
 group 'csula'
@@ -15,11 +16,31 @@ repositories {
   mavenCentral()
 }
 
+jar {
+  manifest {
+    attributes 'Main-Class': 'edu.csula.datascience.examples.Hello'
+  }
+}
+
+shadowJar {
+  baseName = 'big-data'
+  version = '1.0-SNAPSHOT'
+}
+
 dependencies {
   compile 'com.google.guava:guava:19.0'
   compile 'org.slf4j:slf4j-api:1.7.20'
   compile 'com.mashape.unirest:unirest-java:1.4.9'
   compile 'org.mongodb:mongodb-driver:3.2.2'
+  compile 'org.twitter4j:twitter4j-core:4.0.4'
+  compile 'org.elasticsearch:elasticsearch:2.2.0'
+  compile 'com.google.code.gson:gson:2.6.2'
+  compile 'org.apache.commons:commons-csv:1.2'
+  compile 'com.google.api-client:google-api-client:1.20.0'
+  compile 'com.google.apis:google-api-services-sqladmin:v1beta4-rev20-1.20.0'
+  compile 'com.google.apis:google-api-services-youtube:v3-rev167-1.20.0'
+  compile 'com.google.oauth-client:google-oauth-client-java6:1.11.0-beta'
+  compile 'com.google.oauth-client:google-oauth-client-jetty:1.11.0-beta'
 
   testCompile group: 'junit', name: 'junit', version: '4.11'
 }
@@ -30,12 +51,24 @@ task hello(type: JavaExec) {
   main = 'edu.csula.datascience.examples.Hello'
 }
 
+task homework2(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+
+  main = 'edu.csula.datascience.acquisition.runner.DataCollectionRunner'
+}
+
 task token(type: JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
 
   main = 'edu.csula.datascience.auth.AuthenticationApp'
 }
 
+task acquireTwitter(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+
+  main = 'edu.csula.datascience.acquisition.TwitterCollectorApp'
+}
+
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.12'
+  gradleVersion = '2.0'
 }

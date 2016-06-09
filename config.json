@@ -1,0 +1,161 @@
+{
+	"dbHost": "localhost",
+	"api": {
+		"google":{
+			"key":"AIzaSyDZNP-Rc4vCAztgeJjqTg6hTHyfspxsPs8"
+		},
+		"twitter":{
+			"oAuth":"https://api.twitter.com/oauth2/token",
+			"service":"https://api.twitter.com/1.1/search/tweets.",
+			"type":"json",
+			"key":"Vd08xrR9cN6axryGYuvHFYOYB",
+			"secret":"yzTFZgGUfEpgHPttiR9s5a8PPJxbri1OGORLtC4SrPb0metDMw"
+		},
+		"markitOnDemand":{
+			"service":"http://dev.markitondemand.com/MODApis/Api/v2/Quote/",
+			"type":"json"
+		},
+		"quandl":{
+			"key":"vTdaA-ZbqiSEaNRiGi7B",
+			"wiki":"https://www.quandl.com/api/v3/datasets/WIKI/",
+			"revenue":"https://www.quandl.com/api/v3/datasets/SEC/"
+		},
+		"amazon":{
+			"nasdaq":"https://s3.amazonaws.com/quandl-static-content/Ticker+CSV%27s/Stock+Exchanges/NASDAQ.csv",
+			"nyse":"https://s3.amazonaws.com/quandl-static-content/Ticker+CSV%27s/Stock+Exchanges/NYSE.csv"
+		},
+		"elasticsearch":{
+			"cluster-name":"datascience",
+			"address":"http://superlunchvote.com:9200"
+		}
+	},
+	"companies":[
+		{
+			"name":"Apple",
+			"alias":[
+				"iOS",
+				"Mac"
+			],
+			"stock":[
+				"AAPL"
+			]
+		}, {
+			"name":"Google",
+			"alias":[
+				"Android"
+			],
+			"stock":[
+				"GOOGC",
+				"GOOG"
+			]
+		}, {
+			"name":"Twitter",
+			"alias":[],
+			"stock":[
+				"TWTR"
+			]
+		}, {
+			"name":"Facebook",
+			"alias":[],
+			"stock":[
+				"FB"
+			]
+		}, {
+			"name":"Microsoft",
+			"alias":[],
+			"stock":[
+				"MSFT"
+			]
+		}, {
+			"name":"Dell",
+			"alias":[],
+			"stock":[
+				"DELL"
+			]
+		}, {
+			"name":"HP",
+			"alias":[],
+			"stock":[
+				"HPQ"
+			]
+		}, {
+			"name":"Target",
+			"alias":[],
+			"stock":[
+				"TGT"
+			]
+		}, {
+			"name":"Best Buys",
+			"alias":[],
+			"stock":[
+				"BBY"
+			]
+		}, {
+			"name":"Sears Holding Corp",
+			"alias":[
+				"Sears",
+				"Kmart"
+			],
+			"stock":[
+				"SHLD"
+			]
+		}, {
+			"name":"Wal-Mart Stores",
+			"alias":[
+				"walmart"
+			],
+			"stock":[
+				"WMT"
+			]
+		}, {
+			"name":"Costco",
+			"alias":[],
+			"stock":[
+				"COST"
+			]
+		}, {
+			"name":"Home Depot",
+			"alias":[],
+			"stock":[
+				"HD"
+			]
+		}, {
+			"name":"Walgreens",
+			"alias":[],
+			"stock":[
+				"WBA"
+			]
+		}, {
+			"name":"CVS",
+			"alias":[],
+			"stock":[
+				"CVS"
+			]
+		}, {
+			"name":"Lowe",
+			"alias":[
+				"Lowes"
+			],
+			"stock":[
+				"LOW"
+			]
+		}, {
+			"name":"Amazon",
+			"alias":[],
+			"stock":[
+				"AMZN"
+			]
+		}, {
+			"name":"Safeway",
+			"alias":[
+				"Albertsons",
+				"Pavilions",
+				"Randalls",
+				"Vons"
+			],
+			"stock":[
+				"SWY"
+			]
+		}
+	]
+}
