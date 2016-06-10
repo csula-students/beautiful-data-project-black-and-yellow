@@ -4,7 +4,7 @@
 		<title>CS454: Datascience | Black-And-Yellow</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
-		<style src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"></style>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
 		<style>
 		</style>
 	</head>
@@ -12,6 +12,7 @@
 		<nav class="navbar navbar-default" ng-controller="SearchController">
 			<div class="container-fluid">
 				<div class="navbar-header">
+					<a href="/" class="navbar-brand">Black And Yellow</a>
 					<form class="navbar-form navbar-left" role="search">
 						<div class="form-group">
 							<input type="text" class="form-control" placeholder="AAPL" ng-change="searchData" ng-model="query.value" ng-disabled="!query.enabled"/>
