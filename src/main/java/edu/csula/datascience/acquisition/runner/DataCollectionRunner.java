@@ -14,7 +14,11 @@ import edu.csula.datascience.acquisition.driver.network.api.MarkitOnDemandApiDri
 import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.driver.network.api.YoutubeApiDriver;
 import edu.csula.datascience.acquisition.driver.worker.MODApiWorker;
+import edu.csula.datascience.acquisition.driver.worker.AdditionalDataWorker;
+import edu.csula.datascience.acquisition.driver.worker.AdditionalDataWorker2;
 import edu.csula.datascience.acquisition.driver.worker.DataSaverWorker;
+import edu.csula.datascience.acquisition.driver.worker.EvaluateDataWorker;
+import edu.csula.datascience.acquisition.driver.worker.ExportDataToElasticSearch;
 import edu.csula.datascience.acquisition.driver.worker.TwitterApiWorker;
 import edu.csula.datascience.acquisition.driver.worker.YoutubeApiWorker;
 import edu.csula.datascience.acquisition.model.Company;
@@ -27,6 +31,7 @@ public class DataCollectionRunner {
 	public static final String GOOGLE = "google";
 	public static final String QUANDL = "quandl";
 	public static final String AMAZON = "amazon";
+	public static final String ELASTIC_SEARCH = "elasticsearch";
 	
 	protected String dbHost;
 	protected List<Company> companies;
@@ -38,7 +43,7 @@ public class DataCollectionRunner {
 		threads = new ArrayList<>();
 	}
 	
-	protected void runDataWorkers() {
+	public void runDataWorkers() {
 		//Load & Start Workers
 		MODApiWorker worker1 = new MODApiWorker(this.dbHost);
 		worker1.start();
@@ -53,23 +58,85 @@ public class DataCollectionRunner {
 		threads.add(worker3);
 		
 		//Keep parent alive until children are finished
-		for(Thread thread : threads) {
-			if(thread.isAlive()) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				continue;
-			}
-		}
+  		for(int i = 0; i < threads.size(); i++) {
+  			if(threads.get(i).isAlive()) {
+  				try {
+  					Thread.sleep(1000);
+  				} catch (InterruptedException e) {
+  					// TODO Auto-generated catch block
+  					e.printStackTrace();
+  				}
+  				i--;
+  				continue;
+  			}
+  		}
 	}
 	
 	public void runDataSaver() {
 		DataSaverWorker worker4 = new DataSaverWorker(this.dbHost);
 		worker4.start();
 		threads.add(worker4);
+		
+		//Keep parent alive until children are finished
+  		for(int i = 0; i < threads.size(); i++) {
+  			if(threads.get(i).isAlive()) {
+  				try {
+  					Thread.sleep(1000);
+  				} catch (InterruptedException e) {
+  					// TODO Auto-generated catch block
+  					e.printStackTrace();
+  				}
+  				i--;
+  				continue;
+  			}
+  		}
+	}
+	
+	public void runDataEvaluation() {
+		EvaluateDataWorker worker = new EvaluateDataWorker(this.dbHost);
+		worker.start();
+		threads.add(worker);
+		
+		//Keep parent alive until children are finished
+  		for(int i = 0; i < threads.size(); i++) {
+  			if(threads.get(i).isAlive()) {
+  				try {
+  					Thread.sleep(1000);
+  				} catch (InterruptedException e) {
+  					// TODO Auto-generated catch block
+  					e.printStackTrace();
+  				}
+  				i--;
+  				continue;
+  			}
+  		}
+	}
+	
+	public void runAdditionalDataEvaluation() {
+		AdditionalDataWorker worker = new AdditionalDataWorker(this.dbHost);
+		worker.start();
+		threads.add(worker);
+		
+		//Keep parent alive until children are finished
+  		for(int i = 0; i < threads.size(); i++) {
+  			if(threads.get(i).isAlive()) {
+  				try {
+  					Thread.sleep(1000);
+  				} catch (InterruptedException e) {
+  					// TODO Auto-generated catch block
+  					e.printStackTrace();
+  				}
+  				i--;
+  				continue;
+  			}
+  		}
+	}
+	
+	public void runExportToElasticSearch() {
+		HashMap<String,String> config = DataCollectionRunner.getConfig(ELASTIC_SEARCH);
+		ExportDataToElasticSearch worker = new ExportDataToElasticSearch(this.dbHost,config.get("address"),config.get("cluster-name"));
+		worker.start();
+		threads.add(worker);
 		
 		//Keep parent alive until children are finished
 		for(Thread thread : threads) {
@@ -136,7 +203,7 @@ public class DataCollectionRunner {
 			
 			item = json.getJSONObject("api");
 			if(item != null) {
-				String[] names = {GOOGLE,TWITTER,MOD,QUANDL,AMAZON};
+				String[] names = {GOOGLE,TWITTER,MOD,QUANDL,AMAZON,ELASTIC_SEARCH};
 				for(String name : names) {
 					JSONObject _item = item.getJSONObject(name);
 					HashMap<String,String> data = new HashMap<>();
@@ -155,8 +222,24 @@ public class DataCollectionRunner {
 			TwitterApiDriver.getInstance().setConfigData(Instance.apiConfigs.get(TWITTER));
 			
 			Instance.dbHost = json.getString("dbHost");
-			if(args.length > 0 && args[0].equalsIgnoreCase("--save-data")) {
-				Instance.runDataSaver();
+			if(args.length > 0) {
+				for(String arg : args) {
+					if(arg.equalsIgnoreCase("--save-data")) {
+						Instance.runDataSaver();
+					}
+					
+					if(arg.equalsIgnoreCase("--evaluate-data")) {
+						Instance.runDataEvaluation();
+					}
+					
+					if(arg.equalsIgnoreCase("--additional-data")) {
+						Instance.runAdditionalDataEvaluation();
+					}
+					
+					if(arg.equalsIgnoreCase("--export-to-es")) {
+						Instance.runExportToElasticSearch();
+					}
+				}
 			} else {
 				Instance.runDataWorkers();
 			}

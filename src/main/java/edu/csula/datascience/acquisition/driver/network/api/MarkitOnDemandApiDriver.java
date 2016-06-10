@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.BaseCallable;
 import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
-import edu.csula.datascience.acquisition.model.MarkitOnDemandModel;
+import edu.csula.datascience.acquisition.model.database.MarkitOnDemandModel;
 
 /**
  * @see http://dev.markitondemand.com/MODApis/

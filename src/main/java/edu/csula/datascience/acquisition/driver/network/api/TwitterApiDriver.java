@@ -2,6 +2,7 @@ package edu.csula.datascience.acquisition.driver.network.api;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,15 +15,17 @@ import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.BaseCallable;
 import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
 import edu.csula.datascience.acquisition.model.Company;
-import edu.csula.datascience.acquisition.model.TweetModel;
+import edu.csula.datascience.acquisition.model.database.TweetModel;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 	private static TwitterApiDriver Instance = null;
 	protected List<Company> companies;
+	protected SimpleDateFormat dateParser;
 	
 	public static TwitterApiDriver getInstance() {
 		if(Instance == null) {
@@ -35,13 +38,14 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 	protected TwitterApiDriver() { 
 		super();
 		companies = new ArrayList<>();
+		dateParser = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
 	}
 	
 	public void addCompany(Company company) {
 		this.companies.add(company);
 	}
 	
-	public boolean authenticate() {
+	public boolean authenticate() throws JSONException{
 		HTTPServiceDriver apiCaller = new HTTPServiceDriver(this.config.get("oAuth"));
 		apiCaller.setMethodPost();
 		try {
@@ -174,7 +178,7 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 			try {
 				TweetModel model = new TweetModel();
 				
-				model.created_at = row.get("created_at");
+				model.created_at = this.dateParser.parse(row.get("created_at"));
 				model.favorite_count = Integer.valueOf(row.get("favorite_count"));
 				model.id = Long.valueOf(row.get("id"));
 				model.retweet_count = Integer.valueOf(row.get("retweet_count"));
@@ -183,6 +187,8 @@ public class TwitterApiDriver extends BaseApiDriver<TweetModel> {
 				ret.add(model);
 			} catch(NullPointerException e) {
 				//Dirty Data
+			} catch (ParseException e) {
+				//Dirty Date
 			}
 		}
 		return ret;

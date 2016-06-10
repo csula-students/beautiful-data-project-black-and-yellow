@@ -7,12 +7,13 @@ import org.junit.*;
 
 import edu.csula.datascience.acquisition.Collector;
 import edu.csula.datascience.acquisition.driver.database.BaseDataCollector;
-import edu.csula.datascience.acquisition.model.QuandlStockModel;
+import edu.csula.datascience.acquisition.driver.database.mongo.ext.QuandlStockDataCollector;
+import edu.csula.datascience.acquisition.model.database.QuandlStockModel;
 
 public class QuandlStockDataCollectorTest {	
 	@Test
 	public void testMungee() {
-		QuandlStockDataCollector<QuandlStockModel, QuandlStockModel> dbDriver = new QuandlStockDataCollector<>("localhost","test");
+		QuandlStockDataCollector dbDriver = new QuandlStockDataCollector("localhost","test");
 		
 		Assert.assertTrue(dbDriver instanceof BaseMongoDbDataCollector);
 		Assert.assertTrue(dbDriver instanceof BaseDataCollector);
@@ -41,13 +42,13 @@ public class QuandlStockDataCollectorTest {
 		List<QuandlStockModel> list4 = new ArrayList<>();
 		for(int i = 0; i < 3; i++) {
 			QuandlStockModel model = new QuandlStockModel();
-			model.name = "item " + 1;
+			model.stock = "item " + 1;
 			list4.add(model);
 		}
 		List<QuandlStockModel> newList4 = (List<QuandlStockModel>)dbDriver.mungee(list4);	
 		Assert.assertEquals(3, newList4.size());
 		for(int i = 0; i < 3; i++) {
-			Assert.assertEquals(list4.get(i).name, newList4.get(i).name);
+			Assert.assertEquals(list4.get(i).stock, newList4.get(i).stock);
 		}
 	}
 }

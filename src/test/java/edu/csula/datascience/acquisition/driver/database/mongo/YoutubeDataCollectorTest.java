@@ -7,12 +7,13 @@ import org.junit.*;
 
 import edu.csula.datascience.acquisition.Collector;
 import edu.csula.datascience.acquisition.driver.database.BaseDataCollector;
-import edu.csula.datascience.acquisition.model.YoutubeModel;
+import edu.csula.datascience.acquisition.driver.database.mongo.ext.YoutubeDataCollector;
+import edu.csula.datascience.acquisition.model.database.YoutubeModel;
 
 public class YoutubeDataCollectorTest {	
 	@Test
 	public void testMungee() {
-		YoutubeDataCollector<YoutubeModel, YoutubeModel> dbDriver = new YoutubeDataCollector<>("localhost","test");
+		YoutubeDataCollector dbDriver = new YoutubeDataCollector("localhost","test");
 		
 		Assert.assertTrue(dbDriver instanceof BaseMongoDbDataCollector);
 		Assert.assertTrue(dbDriver instanceof BaseDataCollector);

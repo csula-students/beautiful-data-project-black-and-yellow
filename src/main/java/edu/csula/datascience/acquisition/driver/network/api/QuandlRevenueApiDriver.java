@@ -1,6 +1,8 @@
 package edu.csula.datascience.acquisition.driver.network.api;
 
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,14 +14,16 @@ import org.json.JSONObject;
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.BaseCallable;
 import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
-import edu.csula.datascience.acquisition.model.QuandlRevenueModel;
+import edu.csula.datascience.acquisition.model.database.QuandlRevenueModel;
 
 public class QuandlRevenueApiDriver extends BaseApiDriver<QuandlRevenueModel> {
 	protected List<String> companies;
+	protected SimpleDateFormat dateParser;
 
 	public QuandlRevenueApiDriver() {
 		super();
 		this.companies = new ArrayList<>();
+		this.dateParser = new SimpleDateFormat("yyyy-MM-dd");
 	}
 
 	public void addCompanyStock(String stockName) {
@@ -118,12 +122,14 @@ public class QuandlRevenueApiDriver extends BaseApiDriver<QuandlRevenueModel> {
 			try {
 				QuandlRevenueModel model = new QuandlRevenueModel();
 				model.name = row.get("name");
-				model.date = row.get("date");
+				model.date = this.dateParser.parse(row.get("date"));
 				model.value = Double.valueOf(row.get("value"));
 				ret.add(model);
 			} catch(NumberFormatException e) {
 				//Dirty Data
-			}			
+			} catch (ParseException e) {
+				//Dirty Date
+			}		
 		}
 		return ret;
 	}

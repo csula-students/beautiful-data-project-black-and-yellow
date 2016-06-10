@@ -11,3 +11,4 @@ config.json
 /bin/
 *.env
 quandl/*.csv
+/bin1/

@@ -2,10 +2,9 @@ package edu.csula.datascience.acquisition.driver.worker;
 
 import java.util.List;
 
-import edu.csula.datascience.acquisition.driver.database.mongo.TweetDataCollector;
+import edu.csula.datascience.acquisition.driver.database.mongo.ext.TweetDataCollector;
 import edu.csula.datascience.acquisition.driver.network.api.TwitterApiDriver;
 import edu.csula.datascience.acquisition.model.Company;
-import edu.csula.datascience.acquisition.model.TweetModel;
 import edu.csula.datascience.acquisition.runner.DataCollectionRunner;
 
 public class TwitterApiWorker extends Thread {
@@ -16,7 +15,7 @@ public class TwitterApiWorker extends Thread {
 	
 	public void run() {
 		TwitterApiDriver Instance = TwitterApiDriver.getInstance();
-		TweetDataCollector<TweetModel,TweetModel> db = new TweetDataCollector<>(this.dbHost);
+		TweetDataCollector db = new TweetDataCollector(this.dbHost);
 		db.setMinute(-1);
 		//db.setSecond(-10);
 		

@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.BaseCallable;
 import edu.csula.datascience.acquisition.driver.network.HTTPServiceDriver;
-import edu.csula.datascience.acquisition.model.AmazonModel;
+import edu.csula.datascience.acquisition.model.database.AmazonModel;
 
 public class AmazonFinanceApiDriver extends BaseApiDriver<AmazonModel> {
 	protected String exchange;

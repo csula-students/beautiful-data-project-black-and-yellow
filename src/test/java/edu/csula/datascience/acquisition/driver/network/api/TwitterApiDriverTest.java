@@ -6,7 +6,7 @@ import edu.csula.datascience.acquisition.Source;
 import edu.csula.datascience.acquisition.driver.BaseApiDriver;
 import edu.csula.datascience.acquisition.driver.BaseApiDriverTest;
 import edu.csula.datascience.acquisition.model.Company;
-import edu.csula.datascience.acquisition.model.TweetModel;
+import edu.csula.datascience.acquisition.model.database.TweetModel;
 
 public class TwitterApiDriverTest extends BaseApiDriverTest {
 	TwitterApiDriver Instance;
