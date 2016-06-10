@@ -12,6 +12,12 @@ class Config {
 	
 	protected function __construct() {
 		$this->config = json_decode(file_get_contents(dirname(__DIR__)."/config.json"));
+		if(!$this->config) {
+			if(!file_exists(dirname(__DIR__)."/config.json")) {
+				throw new Exception("File not found: " . dirname(__DIR__)."/config.json");
+			}
+			throw new Exception("Unable to parse config file");
+		}
 	}
 	
 	/**
