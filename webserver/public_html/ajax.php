@@ -66,6 +66,14 @@ if($_SERVER['REQUEST_METHOD'] == "GET") {
 				)
 		);
 		$ret->amazon = ElasticSearchDriver::getInstance()->search("amazon",ElasticSearchDriver::SEARCH_MATCH,$query,100,0)->getObject();
+	} elseif(array_key_exists("algorithm",$_GET) && intval($_GET['algorithm']) === 1) {
+		$ret->algorithm = new stdClass();
+		$ret->algorithm->items = TweetAnalyzer::getInstance()->getAlgorithms();
+		$ret->algorithm->maxItems = count($ret->algorithm->items);
+		
+		$ret->aggregation = new stdClass();
+		$ret->aggregation->items = array("hour"=>TweetAnalyzer::AGGREGATION_HOUR,"day"=>TweetAnalyzer::AGGREGATION_DAY,"month"=>TweetAnalyzer::AGGREGATION_MONTH);
+		$ret->aggregation->maxItems = count($ret->algorithm->items);
 	}
 	
 	http_response_code(200);

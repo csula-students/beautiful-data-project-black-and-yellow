@@ -3,7 +3,7 @@ class MemcachedDriver {
 	private static $Instance = null;
 	private $Service = null;
 	
-	public static function getInstance() {
+	public static function getInstance(): MemcachedDriver {
 		if(self::$Instance == null) {
 			self::$Instance = new static();
 		}

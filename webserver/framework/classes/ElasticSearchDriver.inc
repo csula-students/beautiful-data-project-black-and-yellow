@@ -10,7 +10,7 @@ class ElasticSearchDriver {
 	private $Memcache = null;
 	protected $config;
 	
-	public static function getInstance() {
+	public static function getInstance(): ElasticSearchDriver {
 		if(self::$Instance == null) {
 			self::$Instance = new static();
 		}

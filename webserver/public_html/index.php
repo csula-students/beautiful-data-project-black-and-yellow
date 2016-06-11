@@ -41,8 +41,14 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="limit"># of Points</label>
+							<label for="limit"># of Points:</label>
 							<input type="number" min="{{points.min}}" max="{{points.max}}" id="limit" step="10" ng-model="points.value" />
+						</div>
+						<div class="form-group">
+							<label for="algorithm">Algorithm:</label>
+							<select id="algorithm" ng-model="algorithm.value" class="form-control">
+								<option ng-repeat="item in algorithm.items" ng-value="item">{{formatAlgorithmName(item)}}</option>
+							</select>
 						</div>
 						<div class="form-group">
 							<button ng-click="searchData()" class="btn btn-primary">Search</button>
@@ -108,6 +114,10 @@
 					max:10000,
 					min:10
 				};
+				$scope.algorithm = {
+					value: "",
+					items: []
+				};
 				$scope.dateOptions = {
 				    dateDisabled: false,
 				    formatYear: 'yy',
@@ -116,13 +126,17 @@
 				    startingDay: 1
 				};
 				var init = function() {
-					query = {
-						"amazon":"1",
-					}
-					SearchService.get(query,function(data){
+					SearchService.get({"amazon":"1"},function(data){
 						if(data && typeof(data) == "object" && typeof(data.amazon) == "object") {
 							$scope.stock.value = data.amazon.items[0];
 							$scope.stock.companies = data.amazon.items;
+						}
+					});
+
+					SearchService.get({"algorithm":"1"},function(data){
+						if(data && typeof(data) == "object" && typeof(data.algorithm) == "object") {
+							$scope.algorithm.value = data.algorithm.items[0];
+							$scope.algorithm.items = data.algorithm.items;
 						}
 					});
 				};
@@ -171,13 +185,17 @@
 							"stock": $scope.stock.value.ticker,
 							"start": parseInt($scope.startDate.value.getTime() / 1000),
 							"end":parseInt($scope.endDate.value.getTime() / 1000),
-							"size":$scope.points.value
+							"size":$scope.points.value,
+							"alogrithm":$scope.algorithm.value
 						}
 						
 						SearchService.get(query,function(data){
 							$rootScope.$broadcast("newData",{stock: $scope.stock.value, values: data});
 						});
 					},500);
+				};
+				$scope.formatAlgorithmName = function(name){
+					return name.replace("algorithm","").replace(/([A-Z])/g," \$1").trim();
 				};
 				init();
 			}])
