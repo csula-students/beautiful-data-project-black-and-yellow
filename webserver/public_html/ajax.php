@@ -29,7 +29,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET") {
 			)
 		);
 		
-		$ret->stocks = ElasticSearchDriver::getInstance()->search("stocks",ElasticSearchDriver::SEARCH_BOOL,$query,$size,$from)->getRecords();
+		$ret->stocks = ElasticSearchDriver::getInstance()->search("stocks",ElasticSearchDriver::SEARCH_BOOL,$query,$size,$from)->getObject();
 		if(!isset($_GET['from'])) {
 			$amazon = ElasticSearchDriver::getInstance()->search("amazon",ElasticSearchDriver::SEARCH_TERM,array("ticker"=>$stock))->getNextRecord();
 			if($amazon && property_exists($amazon,'name')) {
@@ -55,6 +55,17 @@ if($_SERVER['REQUEST_METHOD'] == "GET") {
 		}		
 	} elseif(array_key_exists("tweet",$_GET) && !empty($_GET['tweet'])) {
 		$ret->tweets = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_MATCH,array("text"=>strtolower("{$name}")),$size,$from)->getRecords();
+	} elseif(array_key_exists("amazon",$_GET) && intval($_GET['amazon']) === 1) {
+		$ret->amazon = ElasticSearchDriver::getInstance()->search("amazon",ElasticSearchDriver::SEARCH_ALL,array(),100,0)->getObject();
+	} elseif(array_key_exists("amazon",$_GET) && !empty($_GET['amazon'])) {
+		$name = strtolower(preg_replace("/[^A-Za-z0-9]/","",$_GET['amazon']));
+		$query = array(
+				"name" => array(
+						"query" => strtolower($name),
+						"fuzziness" => 2
+				)
+		);
+		$ret->amazon = ElasticSearchDriver::getInstance()->search("amazon",ElasticSearchDriver::SEARCH_MATCH,$query,100,0)->getObject();
 	}
 	
 	http_response_code(200);

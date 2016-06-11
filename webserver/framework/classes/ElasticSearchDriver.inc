@@ -4,6 +4,7 @@ class ElasticSearchDriver {
 	const SEARCH_TERM = "term";
 	const SEARCH_BOOL = "bool";
 	const SEARCH_RANGE = "range";
+	const SEARCH_ALL = "all";
 	
 	private static $Instance = null;
 	private $Memcache = null;
@@ -31,7 +32,12 @@ class ElasticSearchDriver {
 	public function search(string $type,string $dslType, array $query,int $limit = 10,$from = 0):ElasticSearchResult {
 		$ch = curl_init();
 		
-		$search = json_encode(array("query"=>array($dslType=>$query),"size"=>$limit,"from"=>$from));
+		if($dslType === self::SEARCH_ALL) {
+			$search = json_encode(array("size"=>$limit,"from"=>$from));
+		} else {
+			$search = json_encode(array("query"=>array($dslType=>$query),"size"=>$limit,"from"=>$from));
+		}
+		
 		$key = "{$type}:{$dslType}:".$search;
 		$ret = $this->Memcache->get($key);
 		if(!$ret) {

@@ -19,19 +19,19 @@ class ElasticSearchResult {
 	}
 	
 	public function getTook():int {
-		return $this->result->took;
+		return intval($this->result->took);
 	}
 	
 	public function getTimedOut():boolean {
-		return $this->result->timed_out;
+		return boolval($this->result->timed_out);
 	}
 	
 	public function getRecordFound():int {
-		return $this->result->hits->total;
+		return intval($this->result->hits->total);
 	}
 	
 	public function getMaxScore():float {
-		return $this->result->hits->max_score;
+		return floatval($this->result->hits->max_score);
 	}
 	
 	public function getNextRecord():stdClass {
@@ -46,11 +46,20 @@ class ElasticSearchResult {
 	
 	public function &getRecords(): array {
 		$Records = array();
-		if(count($this->result->hits->hits) > 0) {
+		if($this->getRecordFound() > 0 && count($this->result->hits->hits) > 0) {
 			foreach($this->result->hits->hits as $Item) {
 				$Records[] = $this->filterObject($Item);
 			}
 		}
 		return $Records;
+	}
+	
+	public function getObject(): stdClass {
+		$ret = new stdClass();
+		$ret->maxItems = $this->getRecordFound();
+		$ret->items = $this->getRecords();
+		$ret->maxScore = $this->getMaxScore();
+		$ret->time = $this->getTook();
+		return $ret;
 	}
 }

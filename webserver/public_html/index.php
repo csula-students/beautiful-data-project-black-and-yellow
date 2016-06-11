@@ -15,8 +15,12 @@
 					<a href="/" class="navbar-brand">Black And Yellow</a>
 					<form class="navbar-form navbar-left" role="search">
 						<div class="form-group">
-							<label for="stock">Stock:</label>
-							<input type="text" id="stock" class="form-control" placeholder="AAPL" ng-model="stock.value"/>
+							<label for="stock">Company:</label>
+							<input type="text" ng-model="stock.value" id="stock" placeholder="Company" uib-typeahead="company as company.name for company in searchMatches($viewValue) | limitTo:8" typeahead-loading="loadingIcon" typeahead-no-results="noResults" class="form-control">
+						    <i ng-show="loadingIcon" class="glyphicon glyphicon-refresh"></i>
+						    <div ng-show="noResults">
+						    	<i class="glyphicon glyphicon-remove"></i> No Results Found
+						    </div>
 						</div>
 						<div class="form-group">
 							<label for="start-date">Start Date:</label>
@@ -75,9 +79,9 @@
 					}
 					
 					_query = _query.substr(0,_query.length-1);
-					$http.get("/ajax.php?"+_query)
+					return $http.get("/ajax.php?"+_query)
 					.then(function(response){
-						callback(response.data);
+						return callback(response.data);
 					},function(response){
 						console.log(response);
 					});
@@ -87,7 +91,8 @@
 				var promise = null;
 				$scope.format = "MMMM dd, yyyy";
 				$scope.stock = {
-					value: "",					
+					value: "",
+					companies: [],
 					enabled: true
 				};
 				$scope.startDate= {
@@ -104,12 +109,23 @@
 					min:10
 				};
 				$scope.dateOptions = {
-					    dateDisabled: false,
-					    formatYear: 'yy',
-					    maxDate: new Date(),
-					    minDate: new Date(2012,01,01),
-					    startingDay: 1
-					  };
+				    dateDisabled: false,
+				    formatYear: 'yy',
+				    maxDate: new Date(),
+				    minDate: new Date(2012,01,01),
+				    startingDay: 1
+				};
+				var init = function() {
+					query = {
+						"amazon":"1",
+					}
+					SearchService.get(query,function(data){
+						if(data && typeof(data) == "object" && typeof(data.amazon) == "object") {
+							$scope.stock.value = data.amazon.items[0];
+							$scope.stock.companies = data.amazon.items;
+						}
+					});
+				};
 				$scope.open = function(num) {
 					switch(num){
 						case 1:
@@ -126,19 +142,33 @@
 							break;
 					};
 				};
+				$scope.searchMatches = function(name) {
+					if(name && name.length > 0) {
+						query = {
+							"amazon":name
+						};
+						return SearchService.get(query,function(data) {
+							if(data && typeof(data) == "object" && typeof(data.amazon) == "object") {
+								$scope.stock.companies = data.amazon.items;
+							}
+							return $scope.stock.companies;
+						});
+					}
+					return $scope.stock.companies;
+				};
 				$scope.searchData = function() {
 					if(promise != null) {
 						$timeout.cancel(promise);
 					}
 					promise = $timeout(function(){
-						if($scope.stock.value.length == 0) {
+						if(typeof($scope.stock.value) != "object") {
 							return;
 						}
 						$scope.points.value = parseInt($scope.points.value);
 						$scope.points.value = $scope.points.value < $scope.points.min ? $scope.points.min : ($scope.points.value > $scope.points.max ? $scope.points.max : $scope.points.value);
 
 						var query = {
-							"stock": $scope.stock.value,
+							"stock": $scope.stock.value.ticker,
 							"start": parseInt($scope.startDate.value.getTime() / 1000),
 							"end":parseInt($scope.endDate.value.getTime() / 1000),
 							"size":$scope.points.value
@@ -149,6 +179,7 @@
 						});
 					},500);
 				};
+				init();
 			}])
 			.controller("GraphingCtrl",["$scope",function($scope){
 				$scope.model = {
@@ -236,11 +267,11 @@
 						$scope.model.stock = data.stock; 
 						
 						if(typeof(data.values.stocks) != "undefined") {
-							$scope.model.data.stocks = data.values.stocks;
+							$scope.model.data.stocks = data.values.stocks.items;
 						}
 
 						if(typeof(data.values.tweets) != "undefined") {
-							$scope.model.data.tweets = data.values.tweets;
+							$scope.model.data.tweets = data.values.tweets.items;
 						}
 
 						updateChart();
