@@ -2,6 +2,9 @@
 class ElasticSearchDriver {
 	const SEARCH_MATCH = "match";
 	const SEARCH_TERM = "term";
+	const SEARCH_BOOL = "bool";
+	const SEARCH_RANGE = "range";
+	
 	private static $Instance = null;
 	private $Memcache = null;
 	protected $config;
@@ -28,13 +31,14 @@ class ElasticSearchDriver {
 	public function search(string $type,string $dslType, array $query,int $limit = 10,$from = 0):ElasticSearchResult {
 		$ch = curl_init();
 		
-		$search = array("query"=>array($dslType=>$query),"size"=>$limit,"from"=>$from);
-		$key = "{$type}:{$dslType}:".json_encode($search);
+		$search = json_encode(array("query"=>array($dslType=>$query),"size"=>$limit,"from"=>$from));
+		$key = "{$type}:{$dslType}:".$search;
 		$ret = $this->Memcache->get($key);
 		if(!$ret) {
+			//var_dump($search);
 			curl_setopt($ch,CURLOPT_URL,"http://{$this->config->host}:{$this->config->port}/{$this->config->index}/{$type}/_search");
 			curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-			curl_setopt($ch,CURLOPT_POSTFIELDS,json_encode($search));
+			curl_setopt($ch,CURLOPT_POSTFIELDS,$search);
 			$ret = curl_exec($ch);
 			curl_close($ch);
 			

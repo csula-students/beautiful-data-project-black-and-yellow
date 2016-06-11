@@ -12,7 +12,9 @@ class ElasticSearchResult {
 	}
 	
 	protected function filterObject(stdClass $Item): stdClass {
-		$Item = $Item->_source;
+		if(property_exists($Item,'_source')) {
+			$Item = $Item->_source;
+		}
 		return $Item;
 	}
 	
@@ -33,7 +35,7 @@ class ElasticSearchResult {
 	}
 	
 	public function getNextRecord():stdClass {
-		$Record = null;
+		$Record = new stdClass();
 		if($this->intItr < count($this->result->hits->hits)) {
 			$Record = $this->result->hits->hits[$this->intItr];
 			$this->intItr++;
