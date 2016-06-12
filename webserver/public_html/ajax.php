@@ -49,8 +49,16 @@ if($_SERVER['REQUEST_METHOD'] == "GET") {
 								)
 						)
 				);
+// 				$algorithm = array_key_exists("algorithm",$_GET) ? preg_replace("/[^A-Za-z]/","",$_GET['algorithm']) : TweetAnalyzer::getInstance()->getAlgorithms()[0];
+// 				if(strpos($algorithm,"algorithm") === false) {
+// 					TweetAnalyzer::getInstance()->getAlgorithms()[0];
+// 				}
+// 				$aggregation = array_key_exists("aggregation",$_GET) ? intval($aggregation) : TweetAnalyzer::AGGREGATION_HOUR;
+// 				$ret->tweets = new stdClass();
+// 				$ret->tweets->items = TweetAnalyzer::getInstance()->$algorithm($name,$start,$end,$aggregation);
+// 				$ret->tweets->maxItems = count($ret->tweets->items);
 				
-				$ret->tweets = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_BOOL,$query)->getRecords();
+				//$ret->tweets = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_BOOL,$query)->getRecords();
 			}
 		}		
 	} elseif(array_key_exists("tweet",$_GET) && !empty($_GET['tweet'])) {
@@ -72,7 +80,7 @@ if($_SERVER['REQUEST_METHOD'] == "GET") {
 		$ret->algorithm->maxItems = count($ret->algorithm->items);
 		
 		$ret->aggregation = new stdClass();
-		$ret->aggregation->items = array("hour"=>TweetAnalyzer::AGGREGATION_HOUR,"day"=>TweetAnalyzer::AGGREGATION_DAY,"month"=>TweetAnalyzer::AGGREGATION_MONTH);
+		$ret->aggregation->items = array(array("name"=>"Hour","id"=>TweetAnalyzer::AGGREGATION_HOUR),array("name"=>"Day","id"=>TweetAnalyzer::AGGREGATION_DAY),array("name"=>"Month","id"=>TweetAnalyzer::AGGREGATION_MONTH));
 		$ret->aggregation->maxItems = count($ret->algorithm->items);
 	}
 	

@@ -6,9 +6,12 @@
 		
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
 		<style>
+			.form-group {
+				margin-bottom: 10px;
+			}
 		</style>
 	</head>
-	<body>
+	<body ng-cloak>
 		<nav class="navbar navbar-default" ng-controller="SearchController">
 			<div class="container-fluid">
 				<div class="navbar-header">
@@ -16,7 +19,7 @@
 					<form class="navbar-form navbar-left" role="search">
 						<div class="form-group">
 							<label for="stock">Company:</label>
-							<input type="text" ng-model="stock.value" id="stock" placeholder="Company" uib-typeahead="company as company.name for company in searchMatches($viewValue) | limitTo:8" typeahead-loading="loadingIcon" typeahead-no-results="noResults" class="form-control">
+							<input type="text" ng-model="stock.value" id="stock" autocomplete="off" placeholder="Company" uib-typeahead="company as company.name for company in searchMatches($viewValue) | limitTo:8" typeahead-loading="loadingIcon" typeahead-no-results="noResults" class="form-control">
 						    <i ng-show="loadingIcon" class="glyphicon glyphicon-refresh"></i>
 						    <div ng-show="noResults">
 						    	<i class="glyphicon glyphicon-remove"></i> No Results Found
@@ -25,7 +28,7 @@
 						<div class="form-group">
 							<label for="start-date">Start Date:</label>
 							<div class="input-group">
-								<input type="text" class="form-control" id="start-date" uib-datepicker-popup="{{format}}" ng-model="startDate.value" is-open="startDate.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+								<input type="text" class="form-control" id="start-date" autocomplete="off" uib-datepicker-popup="{{format}}" ng-model="startDate.value" is-open="startDate.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
 								<span class="input-group-btn">
 									<button type="button" class="btn btn-default" ng-click="open(1)"><i class="glyphicon glyphicon-calendar"></i></button>
 								</span>
@@ -34,7 +37,7 @@
 						<div class="form-group">
 							<label for="end-date">End Date:</label>
 							<div class="input-group">
-								<input type="text" class="form-control" id="end-date" uib-datepicker-popup="{{format}}" ng-model="endDate.value" is-open="endDate.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+								<input type="text" class="form-control" id="end-date" autocomplete="off" uib-datepicker-popup="{{format}}" ng-model="endDate.value" is-open="endDate.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
 								<span class="input-group-btn">
 									<button type="button" class="btn btn-default" ng-click="open(2)"><i class="glyphicon glyphicon-calendar"></i></button>
 								</span>
@@ -42,13 +45,17 @@
 						</div>
 						<div class="form-group">
 							<label for="limit"># of Points:</label>
-							<input type="number" min="{{points.min}}" max="{{points.max}}" id="limit" step="10" ng-model="points.value" />
+							<input type="number" class="form-control" autocomplete="off" min="{{points.min}}" max="{{points.max}}" id="limit" step="10" ng-model="points.value" />
 						</div>
 						<div class="form-group">
 							<label for="algorithm">Algorithm:</label>
 							<select id="algorithm" ng-model="algorithm.value" class="form-control">
-								<option ng-repeat="item in algorithm.items" ng-value="item">{{formatAlgorithmName(item)}}</option>
+								<option ng-repeat="item in algorithm.items" ng-value="item" ng-selected="item == algorithm.value">{{formatAlgorithmName(item)}}</option>
 							</select>
+						</div>
+						<div class="form-group">
+							<label for="aggregation">Aggregation:</label>
+							<select id="aggregation" ng-model="aggregation.value" class="form-control" ng-options="item as item.name for item in aggregation.items"></select>
 						</div>
 						<div class="form-group">
 							<button ng-click="searchData()" class="btn btn-primary">Search</button>
@@ -118,6 +125,10 @@
 					value: "",
 					items: []
 				};
+				$scope.aggregation = {
+					value: "",
+					items: []
+				};
 				$scope.dateOptions = {
 				    dateDisabled: false,
 				    formatYear: 'yy',
@@ -138,6 +149,13 @@
 							$scope.algorithm.value = data.algorithm.items[0];
 							$scope.algorithm.items = data.algorithm.items;
 						}
+
+						if(data && typeof(data) == "object" && typeof(data.aggregation) == "object") {
+							$scope.aggregation.value = data.aggregation.items[0];
+							$scope.aggregation.items = data.aggregation.items;
+						}
+
+						console.log($scope.aggregation);
 					});
 				};
 				$scope.open = function(num) {
@@ -181,12 +199,14 @@
 						$scope.points.value = parseInt($scope.points.value);
 						$scope.points.value = $scope.points.value < $scope.points.min ? $scope.points.min : ($scope.points.value > $scope.points.max ? $scope.points.max : $scope.points.value);
 
+						console.log($scope.aggregation);
 						var query = {
 							"stock": $scope.stock.value.ticker,
 							"start": parseInt($scope.startDate.value.getTime() / 1000),
 							"end":parseInt($scope.endDate.value.getTime() / 1000),
 							"size":$scope.points.value,
-							"alogrithm":$scope.algorithm.value
+							"alogrithm":$scope.algorithm.value,
+							"aggregation":$scope.aggregation.value.id
 						}
 						
 						SearchService.get(query,function(data){
@@ -276,6 +296,16 @@
 						jQuery("#"+$scope.model.id).attr({
 							"width":window.innerWidth,
 							"height":window.innerHeight - jQuery("nav").outerHeight()
+						});
+
+						jQuery(window).resize(function() {
+							jQuery("#"+$scope.model.id).attr({
+								"width":window.innerWidth,
+								"height":window.innerHeight - jQuery("nav").outerHeight()
+							});
+							if($scope.model.chartInstance != null) {
+								$scope.model.chartInstance.update();
+							}
 						});
 					});
 				};

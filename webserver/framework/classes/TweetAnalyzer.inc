@@ -19,24 +19,43 @@ class TweetAnalyzer {
 		
 	}
 	
-	public function algorithmPercentageOfCollected(string $text, array $tweets, int $aggregation): array {
+	public function algorithmPercentageOfCollected(string $text, int $startTimestamp, int $endTimestamp, int $aggregation = self::AGGREGATION_DAY): array {
 		$collection = array();
 		$percentages = array();
+		$start = new DateTime($startTimestamp);
+		$end = new DateTime($endTimestamp);
+		$adjustment = "1 ";
+		
+		switch($aggregation) {
+			case self::AGGREGATION_YEAR:
+				$start->modify("-" + $date->format('m') + " months");
+				$end->modify("-" + $date->format('m') + " months");
+				$adjustment .= "year";
+			case self::AGGREGATION_MONTH:
+				$start->modify("-" + $date->format('d') + " days");
+				$end->modify("-" + $date->format('d') + " days");
+				$adjustment .= "month";
+			case self::AGGREGATION_DAY:
+				$start->modify("-" + $date->format('H') + " hours");
+				$end->modify("-" + $date->format('H') + " hours");
+				$adjustment .= "day";
+			case self::AGGREGATION_HOUR:
+				$start->modify("-" + $date->format('i') + " minutes");
+				$start->modify("-" + $date->format('s') + " seconds");
+				$end->modify("-" + $date->format('i') + " minutes");
+				$end->modify("-" + $date->format('s') + " seconds");
+				$adjustment .= "hour";
+		}
+		
+		while($start < $end) {
+			
+			$end->modify("-{$adjustment}");
+		}
 		
 		if(!empty($tweets)) {
 			foreach($tweets as $tweet) {
 				$date = new DateTime($tweet->date);
-				switch($aggregation) {
-					case self::AGGREGATION_HOUR:
-						$date->modify("-" + $date->format('i') + " minutes");
-						$date->modify("-" + $date->format('s') + " seconds");
-					case self::AGGREGATION_DAY:
-						$date->modify("-" + $date->format('H') + " hours");
-					case self::AGGREGATION_MONTH:
-						$date->modify("-" + $date->format('d') + " days");
-					case self::AGGREGATION_YEAR:
-						$date->modify("-" + $date->format('m') + " months");
-				}
+				
 				$key = $date->format('U');
 				if(!array_key_exists($key,$collection)) {
 					$collection[$key] = array();
