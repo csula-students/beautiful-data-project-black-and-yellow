@@ -292,6 +292,9 @@
 				};
 
 				var init = function() {
+					var _width = window.innerWidth;
+					var _height = window.innerHeight;
+
 					jQuery(document).ready(function(){
 						jQuery("#"+$scope.model.id).attr({
 							"width":window.innerWidth,
@@ -299,12 +302,23 @@
 						});
 
 						jQuery(window).resize(function() {
+							return;
+							if(Math.abs(_width - window.innerWidth)/_width > 0.1) {
+								console.log("triggered");
+								_width = window.innerWidth;
+							}
+
+							if(Math.abs(_height - window.innerHeight)/_height > 0.1) {
+								console.log("triggered");
+								_height = window.innerHeight;
+							}
+
 							jQuery("#"+$scope.model.id).attr({
-								"width":window.innerWidth,
-								"height":window.innerHeight - jQuery("nav").outerHeight()
+								"width":_width,
+								"height":_height - jQuery("nav").outerHeight()
 							});
 							if($scope.model.chartInstance != null) {
-								$scope.model.chartInstance.update();
+							//	$scope.model.chartInstance.update();
 							}
 						});
 					});

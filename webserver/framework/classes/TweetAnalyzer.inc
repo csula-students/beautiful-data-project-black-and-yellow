@@ -48,7 +48,33 @@ class TweetAnalyzer {
 		}
 		
 		while($start < $end) {
+			$date = clone($end);
+			$date->modify($adjustment);
+
+			$query = array(
+				"must" => array(
+					"term" => array("stock" => $name)	
+				),
+				"filter" => array(
+					"range" => array(
+						"date" => array(	
+							"gte"=>$end->format('U'),
+							"lte"=>$data->format('U')
+						)
+					)
+				)
+			);
+			$Found = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_BOOL,$query,0,0);
 			
+			$query = array("date" => array(
+					"gte"=>$end->format('U'),
+					"lte"=>$data->format('U')
+				)
+			);
+			$Total = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_RANGE,$query,0,0);
+
+			$collection[$end->format('U')] = $Found->getRecordFound() / $Total->getRecordFound();
+
 			$end->modify("-{$adjustment}");
 		}
 		
