@@ -44,7 +44,7 @@ class MemcachedDriver {
 		return $this->Service->get($key);
 	}
 	
-	public function set($key,&$value,$ttl=10) {
+	public function set($key,$value,$ttl=10) {
 		if($this->Service == null) {
 			return false;
 		}

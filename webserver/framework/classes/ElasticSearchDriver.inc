@@ -38,17 +38,16 @@ class ElasticSearchDriver {
 			$search = json_encode(array("query"=>array($dslType=>$query),"size"=>$limit,"from"=>$from));
 		}
 		
-		$key = "{$type}:{$dslType}:".$search;
+		$key = sha1("{$type}:{$dslType}:".$search);
 		$ret = $this->Memcache->get($key);
-		if(!$ret) {
-			//var_dump($search);
+		if(!$ret || !json_decode($ret)) {
 			curl_setopt($ch,CURLOPT_URL,"http://{$this->config->host}:{$this->config->port}/{$this->config->index}/{$type}/_search");
 			curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 			curl_setopt($ch,CURLOPT_POSTFIELDS,$search);
 			$ret = curl_exec($ch);
 			curl_close($ch);
 			
-			$this->Memcache->set($key,$ret,1);
+			$this->Memcache->set($key,$ret,86400);
 		}
 		return new ElasticSearchResult($ret);
 	}

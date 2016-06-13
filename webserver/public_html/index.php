@@ -205,7 +205,7 @@
 							"start": parseInt($scope.startDate.value.getTime() / 1000),
 							"end":parseInt($scope.endDate.value.getTime() / 1000),
 							"size":$scope.points.value,
-							"alogrithm":$scope.algorithm.value,
+							"algorithm":$scope.algorithm.value,
 							"aggregation":$scope.aggregation.value.id
 						}
 						
@@ -241,13 +241,23 @@
 						return a.x-b.x;
 					});
 				};
+				var getTweetValues = function() {
+					var list = [];
+					for(i in $scope.model.data.tweets) {
+						list.push({
+							y:$scope.model.data.tweets[i].value,
+							x:new Date($scope.model.data.tweets[i].date *1000)
+						});
+					}
+					return list;
+				};
 				var getStockTimestamp = function() {
 					var list = [];
 					for(i in $scope.model.data.stocks) {
 						list.push(new Date($scope.model.data.stocks[i].date *1000));
 					}
 					return list;
-				}
+				};				
 				
 				var updateChart = function() {
 					if($scope.model.chartInstance == null) {
@@ -260,6 +270,12 @@
 									data: getStockValues(),
 									backgroundColor: 'rgba(255, 99, 132, 0.2)',
 									borderColor: 'rgba(255,99,132,1)',
+									borderWidth: 1
+								},{
+									label: 'Tweet Values',
+									data: getTweetValues(),
+									backgroundColor: 'rgba(0, 102, 255, 0.2)',
+									borderColor: 'rgba(0, 102, 255,1)',
 									borderWidth: 1
 								}]
 							},
@@ -286,6 +302,7 @@
 					} else {
 						$scope.model.chartInstance.data.labels = getStockTimestamp();
 						$scope.model.chartInstance.data.datasets[0].data = getStockValues();
+						$scope.model.chartInstance.data.datasets[1].data = getTweetValues();
 						$scope.model.chartInstance.update();
 					}
 					
@@ -302,14 +319,11 @@
 						});
 
 						jQuery(window).resize(function() {
-							return;
-							if(Math.abs(_width - window.innerWidth)/_width > 0.1) {
-								console.log("triggered");
+							if(Math.abs(_width - window.innerWidth)/Math.max(_width,window.innerWidth) > 0.1) {
 								_width = window.innerWidth;
 							}
 
-							if(Math.abs(_height - window.innerHeight)/_height > 0.1) {
-								console.log("triggered");
+							if(Math.abs(_height - window.innerHeight)/Math.max(_height,window.innerHeight) > 0.1) {
 								_height = window.innerHeight;
 							}
 
@@ -318,7 +332,7 @@
 								"height":_height - jQuery("nav").outerHeight()
 							});
 							if($scope.model.chartInstance != null) {
-							//	$scope.model.chartInstance.update();
+								$scope.model.chartInstance.update();
 							}
 						});
 					});
@@ -326,15 +340,26 @@
 				
 				$scope.$on("newData",function(event,data){
 					if(data && typeof(data) == "object") {
-						$scope.model.stock = data.stock; 
+						$scope.model.stock = data.stock;
+						var scale = 1;
 						
 						if(typeof(data.values.stocks) != "undefined") {
 							$scope.model.data.stocks = data.values.stocks.items;
+							for(i in $scope.model.data.stocks) {
+								if($scope.model.data.stocks[i].open > scale) {
+									scale = $scope.model.data.stocks[i].open;
+								}
+							}
 						}
 
 						if(typeof(data.values.tweets) != "undefined") {
 							$scope.model.data.tweets = data.values.tweets.items;
+							for(i in $scope.model.data.tweets) {
+								$scope.model.data.tweets[i].value = $scope.model.data.tweets[i].value * scale;
+							}
 						}
+
+						console.log($scope.model.data.tweets);
 
 						updateChart();
 					}

@@ -20,46 +20,61 @@ class TweetAnalyzer {
 	}
 	
 	public function algorithmPercentageOfCollected(string $text, int $startTimestamp, int $endTimestamp, int $aggregation = self::AGGREGATION_DAY): array {
-		$collection = array();
 		$percentages = array();
-		$start = new DateTime($startTimestamp);
-		$end = new DateTime($endTimestamp);
-		$adjustment = "1 ";
+		$start = new DateTime("@{$startTimestamp}");
+		$end = new DateTime("@{$endTimestamp}");
+		$adjustment = "";
 		
 		switch($aggregation) {
 			case self::AGGREGATION_YEAR:
-				$start->modify("-" + $date->format('m') + " months");
-				$end->modify("-" + $date->format('m') + " months");
-				$adjustment .= "year";
+				$start->modify("-{$start->format('m')} months");
+				$end->modify("-{$end->format('m')} months");
+				if(empty($adjustment)) {
+					$adjustment = "year";
+				}
 			case self::AGGREGATION_MONTH:
-				$start->modify("-" + $date->format('d') + " days");
-				$end->modify("-" + $date->format('d') + " days");
-				$adjustment .= "month";
+				$start->modify("-{$start->format('d')} days");
+				$end->modify("-{$end->format('d')} days");
+				if(empty($adjustment)) {
+					$adjustment = "month";
+				}
 			case self::AGGREGATION_DAY:
-				$start->modify("-" + $date->format('H') + " hours");
-				$end->modify("-" + $date->format('H') + " hours");
-				$adjustment .= "day";
+				$start->modify("-{$start->format('H')} hours");
+				$end->modify("-{$end->format('H')} hours");
+				if(empty($adjustment)) {
+					$adjustment = "day";
+				}
 			case self::AGGREGATION_HOUR:
-				$start->modify("-" + $date->format('i') + " minutes");
-				$start->modify("-" + $date->format('s') + " seconds");
-				$end->modify("-" + $date->format('i') + " minutes");
-				$end->modify("-" + $date->format('s') + " seconds");
-				$adjustment .= "hour";
+				$start->modify("-{$start->format('i')} minutes");
+				$start->modify("-{$start->format('s')} seconds");
+				$end->modify("-{$end->format('i')} minutes");
+				$end->modify("-{$end->format('s')} seconds");
+				if(empty($adjustment)) {
+					$adjustment = "hour";
+				}
 		}
 		
-		while($start < $end) {
+		while($start <= $end) {
 			$date = clone($end);
-			$date->modify($adjustment);
+			$date->modify("+1 {$adjustment}");
+			
+			$startTimestamp = $end->format('U');
+			$endTimestamp = $date->format('U');
 
 			$query = array(
 				"must" => array(
-					"term" => array("stock" => $name)	
+					"match" => array("text" => 
+							array(
+								"query" => strtolower($text),
+								"fuzziness" => 2
+							)
+					)	
 				),
 				"filter" => array(
 					"range" => array(
 						"date" => array(	
-							"gte"=>$end->format('U'),
-							"lte"=>$data->format('U')
+							"gte"=>$startTimestamp,
+							"lte"=>$endTimestamp
 						)
 					)
 				)
@@ -67,41 +82,123 @@ class TweetAnalyzer {
 			$Found = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_BOOL,$query,0,0);
 			
 			$query = array("date" => array(
-					"gte"=>$end->format('U'),
-					"lte"=>$data->format('U')
+					"gte"=>$startTimestamp,
+					"lte"=>$endTimestamp
 				)
 			);
+			
 			$Total = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_RANGE,$query,0,0);
 
-			$collection[$end->format('U')] = $Found->getRecordFound() / $Total->getRecordFound();
+			if($Total->getRecordFound() > 0) {
+				$percentages[] = array("date"=>$endTimestamp,"value"=>$Found->getRecordFound() / $Total->getRecordFound());
+			}	
 
-			$end->modify("-{$adjustment}");
+			$end->modify("-1 {$adjustment}");
 		}
 		
-		if(!empty($tweets)) {
-			foreach($tweets as $tweet) {
-				$date = new DateTime($tweet->date);
-				
-				$key = $date->format('U');
-				if(!array_key_exists($key,$collection)) {
-					$collection[$key] = array();
+		return $percentages;
+	}
+	
+	public function algorithmPercentageChange(string $text, int $startTimestamp, int $endTimestamp, int $aggregation = self::AGGREGATION_DAY): array {
+		$percentages = array();
+		$start = new DateTime("@{$startTimestamp}");
+		$end = new DateTime("@{$endTimestamp}");
+		$adjustment = "";
+	
+		switch($aggregation) {
+			case self::AGGREGATION_YEAR:
+				$start->modify("-{$start->format('m')} months");
+				$end->modify("-{$end->format('m')} months");
+				if(empty($adjustment)) {
+					$adjustment = "year";
 				}
+			case self::AGGREGATION_MONTH:
+				$start->modify("-{$start->format('d')} days");
+				$end->modify("-{$end->format('d')} days");
+				if(empty($adjustment)) {
+					$adjustment = "month";
+				}
+			case self::AGGREGATION_DAY:
+				$start->modify("-{$start->format('H')} hours");
+				$end->modify("-{$end->format('H')} hours");
+				if(empty($adjustment)) {
+					$adjustment = "day";
+				}
+			case self::AGGREGATION_HOUR:
+				$start->modify("-{$start->format('i')} minutes");
+				$start->modify("-{$start->format('s')} seconds");
+				$end->modify("-{$end->format('i')} minutes");
+				$end->modify("-{$end->format('s')} seconds");
+				if(empty($adjustment)) {
+					$adjustment = "hour";
+				}
+		}
+	
+		while($start <= $end) {
+			$date = clone($end);
+			$date->modify("+1 {$adjustment}");
 				
-				$collection[$key][] = $tweet;
-			}
+			$startTimestamp = $end->format('U');
+			$endTimestamp = $date->format('U');
 			
-			foreach($collection as $timestamp => $tweets) {
-				$hits = 0;
-				foreach($tweets as $tweet) {
-					if(preg_match("/(\#|\@)?{$text}(\'.*)? /i",$tweet->text)){
-						$hits++;
-					}
-				}
-				
-				$percentages[$timestamp] = $hits / count($tweets);
+			$end->modify("-1 {$adjustment}");
+			$date = clone($end);
+			$date->modify("+1 {$adjustment}");
+			
+			$prevStartTimestamp = $end->format('U');
+			$prevEndTimestamp = $date->format('U');
+	
+			$query = array(
+					"must" => array(
+							"match" => array("text" =>
+									array(
+											"query" => strtolower($text),
+											"fuzziness" => 2
+									)
+							)
+					),
+					"filter" => array(
+							"range" => array(
+									"date" => array(
+											"gte"=>$startTimestamp,
+											"lte"=>$endTimestamp
+									)
+							)
+					)
+			);
+			$Found = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_BOOL,$query,0,0);
+			
+			if($Found->getRecordFound() == 0) {
+				continue;
 			}
+			$query = array(
+					"must" => array(
+							"match" => array("text" =>
+									array(
+											"query" => strtolower($text),
+											"fuzziness" => 2
+									)
+							)
+					),
+					"filter" => array(
+							"range" => array(
+									"date" => array(
+											"gte"=>$prevStartTimestamp,
+											"lte"=>$prevEndTimestamp
+									)
+							)
+					)
+			);
+				
+			$Previous = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_BOOL,$query,0,0);
+	
+			if($Previous->getRecordFound() > 0) {
+				$percentages[] = array("date"=>$endTimestamp,"value"=> ($Found->getRecordFound() - $Previous->getRecordFound()) / $Previous->getRecordFound());
+			}
+	
+			
 		}
-		
+	
 		return $percentages;
 	}
 	

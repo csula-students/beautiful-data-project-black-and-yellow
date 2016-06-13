@@ -49,16 +49,14 @@ if($_SERVER['REQUEST_METHOD'] == "GET") {
 								)
 						)
 				);
-// 				$algorithm = array_key_exists("algorithm",$_GET) ? preg_replace("/[^A-Za-z]/","",$_GET['algorithm']) : TweetAnalyzer::getInstance()->getAlgorithms()[0];
-// 				if(strpos($algorithm,"algorithm") === false) {
-// 					TweetAnalyzer::getInstance()->getAlgorithms()[0];
-// 				}
-// 				$aggregation = array_key_exists("aggregation",$_GET) ? intval($aggregation) : TweetAnalyzer::AGGREGATION_HOUR;
-// 				$ret->tweets = new stdClass();
-// 				$ret->tweets->items = TweetAnalyzer::getInstance()->$algorithm($name,$start,$end,$aggregation);
-// 				$ret->tweets->maxItems = count($ret->tweets->items);
-				
-				//$ret->tweets = ElasticSearchDriver::getInstance()->search("tweets-5.0",ElasticSearchDriver::SEARCH_BOOL,$query)->getRecords();
+				$algorithm = array_key_exists("algorithm",$_GET) ? preg_replace("/[^A-Za-z]/","",$_GET['algorithm']) : TweetAnalyzer::getInstance()->getAlgorithms()[0];
+				if(strpos($algorithm,"algorithm") === false) {
+					TweetAnalyzer::getInstance()->getAlgorithms()[0];
+				}
+				$aggregation = array_key_exists("aggregation",$_GET) ? intval($_GET['aggregation']) : TweetAnalyzer::AGGREGATION_HOUR;
+				$ret->tweets = new stdClass();
+				$ret->tweets->items = TweetAnalyzer::getInstance()->$algorithm($name,$start,$end,$aggregation);
+				$ret->tweets->maxItems = count($ret->tweets->items);
 			}
 		}		
 	} elseif(array_key_exists("tweet",$_GET) && !empty($_GET['tweet'])) {

@@ -5,7 +5,7 @@ class ElasticSearchResult {
 	function __construct(string $json) {
 		$result = json_decode($json);
 		if(!$result) {
-			throw new Exception("Invalid json");
+			throw new Exception("Invalid json: " . $json);
 		}
 		
 		$this->result = $result;
