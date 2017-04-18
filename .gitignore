@@ -2,7 +2,12 @@
 .gradle/
 .idea/
 build/
+
+config.json
+*.json
 .project
 .settings
 .classpath
 /bin/
+*.env
+quandl/*.csv
